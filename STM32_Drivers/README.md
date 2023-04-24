@@ -1,5 +1,3 @@
-Certainly! Here's a sample README.md file for STM32 drivers:
-
 # STM32 Drivers
 
 This repository contains a collection of drivers for STM32 microcontrollers. The drivers are designed to work with the STM32CubeIDE development environment and have been tested on a variety of STM32 boards, including the STM32F4-Discovery and the Nucleo-F401RE.
