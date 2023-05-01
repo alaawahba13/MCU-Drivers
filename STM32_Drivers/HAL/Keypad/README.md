@@ -34,6 +34,3 @@ int main()
 }
 ```
 
-## License
-
-This module is released under the MIT license. See the LICENSE file for more details.
