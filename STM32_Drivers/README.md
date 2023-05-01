@@ -1,6 +1,6 @@
 # STM32 Drivers
 
-This repository contains a collection of drivers for STM32 microcontrollers. The drivers are designed to work with the STM32CubeIDE development environment and have been tested on a variety of STM32 boards, including the STM32F4-Discovery and the Nucleo-F401RE.
+This repository contains a collection of drivers for STM32 microcontrollers. The drivers are designed to work with the STM32CubeIDE development environment and have been tested on a variety of STM32 boards.
 
 ## Getting Started
 
@@ -10,7 +10,7 @@ To use these drivers in your project, simply clone this repository into your STM
 git clone https://github.com/alaawahba13/MCU-Drivers.git
 ```
 
-Then add the appropriate driver files to your project by including them in your build system. The drivers are organized by peripheral and can be found in the `drivers` directory.
+Then add the appropriate driver files to your project by including them in your build system. The drivers are organized by peripheral and can be found in the `STM32_F103C6_Drivers` directory.
 
 ## Documentation
 
@@ -22,4 +22,4 @@ Contributions to this repository are welcome and encouraged! If you find a bug o
 
 ## Contact
 
-If you have any questions or comments, please feel free to contact us at alaawahbaa13@gmail.com.
+If you have any questions or comments, please feel free to contact me at alaawahbaa13@gmail.com.
