@@ -1,78 +1,42 @@
-# GPIO Library for STM32F103C6
+README.md
 
-This library provides functions to configure GPIO pins of STM32F103C6 microcontroller.
+# EXTI Driver
 
-## Functions
+This is a driver for EXTI (External Interrupt) module in STM32 microcontrollers. The driver provides an interface to configure and enable EXTI pins.
 
-The library provides the following functions:
+## File Structure
 
-### 1. GPIO_init
-
-```c
-void GPIO_init(GPIO_Registers_t *GPIOx, GPIO_PinConfig_t *pinConfig);
+```
+├── EXTI.h
+├── EXTI.c
+└── README.md
 ```
 
-This function is used to initialize the GPIO pin according to the specified configuration.
+* `EXTI.h` contains the function prototypes and necessary macros for EXTI configuration.
+* `EXTI.c` contains the implementation of the functions declared in `EXTI.h`.
+* `README.md` is a file that explains the purpose and usage of the driver.
 
-* `GPIOx`: Select the port where the x can be (A..E depending on device used).
-* `pinConfig`: Pointer to a structure that contains the pin configuration information.
+## Dependencies
 
-### 2. GPIO_DeInit
+This driver depends on the following:
 
-```c
-void GPIO_DeInit(GPIO_Registers_t *GPIOx);
-```
+* STM32F103C8T6 Microcontroller
+* CMSIS Library version 1.0.0
 
-This function is used to reset all the GPIO registers.
+## How to Use
 
-* `GPIOx`: Select the port where the x can be (A..E depending on device used).
+To use the driver, follow these steps:
 
-## Structure
+1. Include `EXTI.h` in your project source code.
+2. Initialize the pin configuration structure of type `EXTI_PinConfig_t` with the desired values. The configuration structure must be initialized with the following:
+	- `pinMapping` : contains the GPIO port and pin number that will be used for EXTI
+	- `triggerEdge` : contains the desired trigger edge (rising edge, falling edge or both)
+	- `enable` : contains the enable status of the EXTI pin (enabled or disabled)
+	- `callback` : contains a pointer to a function that will be called when the EXTI interrupt occurs
+3. Call the function `Update_EXTI()` and pass the address of the configuration structure as a parameter.
+4. Implement the callback function to handle the interrupt that will be triggered by EXTI.
 
-The library uses the following structures:
+## Contributors
 
-### 1. GPIO_PinConfig_t
+* Alaa Wahba (alaawahba3@gmail.com)
 
-```c
-typedef struct
-{
-	uint16 Pin_Number;  // specifies the GPIO pins to be configured.
-	uint32 MODE;        // specifies the operating mode for the selected pins.
-	uint32 Output_Speed;// Specifies the speed for the selected pins.
-}GPIO_PinConfig_t;
-```
-
-This structure contains the pin configuration information.
-
-* `Pin_Number`: Specifies the GPIO pins to be configured.
-* `MODE`: Specifies the operating mode for the selected pins.
-* `Output_Speed`: Specifies the speed for the selected pins.
-
-### 2. GPIO_Registers_t
-
-```c
-typedef struct
-{
-	volatile uint32 CRL;  // GPIO port configuration register low.
-	volatile uint32 CRH;  // GPIO port configuration register high.
-	volatile uint32 IDR;  // GPIO port input data register.
-	volatile uint32 ODR;  // GPIO port output data register.
-	volatile uint32 BSRR; // GPIO port bit set/reset register.
-	volatile uint32 BRR;  // GPIO port bit reset register.
-	volatile uint32 LCKR; // GPIO port configuration lock register.
-}GPIO_Registers_t;
-```
-
-This structure contains the registers of the GPIO port.
-
-* `CRL`: GPIO port configuration register low.
-* `CRH`: GPIO port configuration register high.
-* `IDR`: GPIO port input data register.
-* `ODR`: GPIO port output data register.
-* `BSRR`: GPIO port bit set/reset register.
-* `BRR`: GPIO port bit reset register.
-* `LCKR`: GPIO port configuration lock register.
-
-## Author
-
-This library was created by Alaa Wahba.
