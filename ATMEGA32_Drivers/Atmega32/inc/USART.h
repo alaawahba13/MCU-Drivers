@@ -32,14 +32,7 @@ void USART_recieveString(uint8 *Buff);
 uint32 USART_recieveNumber();
 
 uint8 USART_recievePeriodicData(uint8 *data);
-//Interrupt
-void USART_sendNoBlock(uint8 data);
-uint8 USART_recieveNoBlock();
-void USART_TX_interrupt_Enable();
-void USART_TX_interrupt_Disable();
-void USART_RX_interrupt_Enable();
-void USART_RX_interrupt_Disable();
-void USART_send_string_Asynch(uint8 *str);
+
 
 
 
