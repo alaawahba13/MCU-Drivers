@@ -54,6 +54,14 @@
 
 #define HIGH	 		1
 #define LOW				0
+
+/*
+ * @ref port_value_define
+ */
+
+#define PORT_HIGH	 		0xFF
+#define PORT_LOW			0x00
+
 /*
 * ===============================================
 * APIs Supported by "MCAL DIO DRIVER"

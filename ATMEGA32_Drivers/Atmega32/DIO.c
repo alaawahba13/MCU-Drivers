@@ -110,7 +110,7 @@ void DIO_WritePin(uint8 pinNumber, uint8 port, uint8 value) {
  * @Fn				- DIO_WritePort
  * @brief 			- Writes the specified value to the DIOx
  * @param [in]	    - port : Select the port where the x can be (A..D) @ref port_define
- * @param [in]	    - value : is the value written to pin @ref value_define
+ * @param [in]	    - value : is the value written to pin @ref port_value_define
  * @retval 			- none
  */
 void DIO_WritePort(uint8 port, uint8 value) {
