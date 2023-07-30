@@ -61,5 +61,6 @@ void lcd_Clear_Screen(void);
 void lcd_GOTO_XY(unsigned char row , unsigned char col);
 void lcd_display_number(int Number);
 void lcd_display_Real_number(double Number);
+void LCD_createCustomCharacter(uint8 *pattern, uint8 location);
 
 #endif /* LCD_H_ */

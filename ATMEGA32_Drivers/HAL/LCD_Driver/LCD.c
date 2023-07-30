@@ -26,7 +26,7 @@ void lcd_init(){
 	// set three control pins as output and write 0
 	LCD_CONTROL_DDR |= (1<<ENABLE_SWITCH | 1<<REGISTER_SELECT | 1<<ReadWrite);
 	LCD_CONTROL_PORT &= ~(1<<ENABLE_SWITCH | 1<<REGISTER_SELECT | 1<<ReadWrite);
-	_delay_ms(15);
+	_delay_ms(2);
 	lcd_Clear_Screen();
 	/* Define the lcd Mode by its instruction*/
 #ifdef EIGHT_BIT_MODE
@@ -46,7 +46,7 @@ void lcd_init(){
 void lcd_Send_Command(unsigned char command){
 
 #ifdef EIGHT_BIT_MODE
-	isBusy();
+
 	// 1.Write
 	LCD_PORT = command;
 	// 2.Reset
@@ -55,7 +55,7 @@ void lcd_Send_Command(unsigned char command){
 	lcd_kick();
 #endif
 #ifdef FOUR_BIT_MODE
-	isBusy();
+
 	LCD_PORT = (LCD_PORT & 0x0F) | (command & 0xF0);
 	LCD_CONTROL_PORT &= ~ ((1<<ReadWrite) | (1<< REGISTER_SELECT));
 	//_delay_ms(1);
@@ -70,7 +70,7 @@ void lcd_Send_Command(unsigned char command){
 void lcd_Send_Char(unsigned char character){
 
 #ifdef EIGHT_BIT_MODE
-	isBusy();
+
 	//1. set the RS to 1 to send data
 	LCD_CONTROL_PORT |= (1<< REGISTER_SELECT);
 	//2. Write data
@@ -150,4 +150,14 @@ void lcd_kick(){
 	CLEAR(LCD_CONTROL_PORT, ENABLE_SWITCH);
 	_delay_ms(50);
 	SET(LCD_CONTROL_PORT, ENABLE_SWITCH);
+}
+
+void LCD_createCustomCharacter(uint8 *pattern, uint8 location) {
+	uint8 i = 0;
+
+	lcd_Send_Command(0x40 + (location * 8)); /* Send the Address of CGRAM */
+
+	for (i = 0; i < 8; i++) {
+		lcd_Send_Char(pattern[i]); /* Pass the Bytes of pattern on LCD */
+	}
 }
