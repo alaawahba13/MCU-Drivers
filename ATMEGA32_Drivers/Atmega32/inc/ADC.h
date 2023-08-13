@@ -19,7 +19,7 @@
 //-----------------------------
 // Configuration Refrences
 //-----------------------------
-
+#define MAX_timeout 		50000
 typedef enum{
 	AREF = 0x00,
 	VCC_5 = 0x40,
@@ -55,7 +55,7 @@ typedef enum{
 typedef enum{
 	DISABLE ,
 	ENABLE
-}ADC_INT_t;
+}ADC_EN_t;
 
 typedef enum{
 	SINGLE_CONVERSION=0x00,
@@ -66,7 +66,7 @@ typedef struct{
 	ADC_VREF_t vref;
 	ADC_ADJUST_t adjust;
 	ADC_PRESCALAR_t prescalar;
-	ADC_INT_t INT_Enable;
+	ADC_EN_t INT_Enable;
 	ADC_MODE_t mode;
 	void (*CallBack_Ptr)(void);
 }ADC_pinConfig_t;
