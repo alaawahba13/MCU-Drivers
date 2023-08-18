@@ -42,7 +42,7 @@ void SPI_init(SPI_PinConfig_t *SPI_pinConfig, SPI_Registers_t *SPIx) {
 	}
 
 	/*			Enable SPI Module       */
-	tmpreg_CR1 |= (1 << 6);		 //SPE: SPI enable
+	tmpreg_CR1  |= (1 << 6);		 //SPE: SPI enable
 	/*			Configure SPI Mode	  						*/
 	tmpreg_CR1 |= SPI_pinConfig->SPI_Mode;
 	/*			Configure SPI Commuincation Mode		*/
@@ -57,7 +57,7 @@ void SPI_init(SPI_PinConfig_t *SPI_pinConfig, SPI_Registers_t *SPIx) {
 	/*			Configure NSS		*/
 	if (SPI_pinConfig->NSS == SPI_NSS_Hard_Master_SS_output_enable)
 		tmpreg_CR2 |= SPI_pinConfig->NSS;
-	else if (SPI_pinConfig->NSS == SPI_NSS_Hard_Master_SS_output_disable)
+	else if (SPI_pinConfig->NSS == SPI_NSS_Hard_Master_SS_output_disable || SPI_pinConfig->NSS == SPI_NSS_Hard_Slave)
 		tmpreg_CR2 &= SPI_pinConfig->NSS;
 	else
 		tmpreg_CR1 |= SPI_pinConfig->NSS;
@@ -84,6 +84,9 @@ void SPI_init(SPI_PinConfig_t *SPI_pinConfig, SPI_Registers_t *SPIx) {
 	SPIx->CR1 = tmpreg_CR1;
 	SPIx->CR2 = tmpreg_CR2;
 
+	SPIx->I2SCFGR &= ~(1<<11);
+	SPIx->CRCPR = 0x0;
+
 }
 /**================================================================
  * @Fn				- SPI_DeInit
@@ -108,12 +111,12 @@ void SPI_DeInit(SPI_Registers_t *SPIx) {
  * @param [in]		- PollingEn: Enables or disables the polling mechanism
  */
 void SPI_SendData(SPI_Registers_t *SPIx, uint16 *pData,
-		enum Polling_Mechanism PollingEn) {
-	if (PollingEn == Enable) {
+		enum PollingMechanism PollingEn) {
+	if (PollingEn == Pollingenable) {
 		while (!((SPIx->SR) & TXE_PIN))
 			;
 	}
-	SPIx->DR |= *pData;
+	SPIx->DR = *pData;
 }
 /**================================================================
  * @Fn				- SPI_RecieveData
@@ -123,8 +126,8 @@ void SPI_SendData(SPI_Registers_t *SPIx, uint16 *pData,
  * @param [in]		- PollingEn: Enables or disables the polling mechanism
  */
 void SPI_RecieveData(SPI_Registers_t *SPIx, uint16 *pData,
-		enum Polling_Mechanism PollingEn) {
-	if (PollingEn == Enable) {
+		enum PollingMechanism PollingEn) {
+	if (PollingEn == Pollingenable) {
 		while (!((SPIx->SR) & RXNE_PIN))
 			;
 	}
@@ -143,7 +146,7 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
 		// MASTER
 		if (Global_SPI_pinConfig[SPI1_Index]->SPI_Mode == SPI_Mode_Master) {
 			// NSS
-		/*	switch(Global_SPI_pinConfig[SPI1_Index]->NSS)
+			switch(Global_SPI_pinConfig[SPI1_Index]->NSS)
 			{
 				case SPI_NSS_Hard_Master_SS_output_disable :
 				GPIO_pinConfig.MODE = MODE_INPUT_FLO;
@@ -156,7 +159,7 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
 				GPIO_pinConfig.Pin_Number = PIN_4;
 				GPIO_init(GPIOA, &GPIO_pinConfig);
 				break;
-			}*/
+			}
 			// SCLK
 			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
 			GPIO_pinConfig.Output_Speed = SPEED_10M;
@@ -190,6 +193,7 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
 			GPIO_init(GPIOA, &GPIO_pinConfig);
 			//MISO
 			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
+			GPIO_pinConfig.Output_Speed = SPEED_10M;
 			GPIO_pinConfig.Pin_Number = PIN_6;
 			GPIO_init(GPIOA, &GPIO_pinConfig);
 		}
@@ -199,7 +203,7 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
 		if (Global_SPI_pinConfig[SPI2_Index]->SPI_Mode == SPI_Mode_Master) {
 			// NSS
 
-		/*	switch(Global_SPI_pinConfig[SPI2_Index]->NSS)
+			switch(Global_SPI_pinConfig[SPI2_Index]->NSS)
 			{
 				case SPI_NSS_Hard_Master_SS_output_disable :
 				GPIO_pinConfig.MODE = MODE_INPUT_FLO;
@@ -212,7 +216,7 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
 				GPIO_pinConfig.Pin_Number = PIN_12;
 				GPIO_init(GPIOB, &GPIO_pinConfig);
 				break;
-			}*/
+			}
 			// SCLK
 			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
 			GPIO_pinConfig.Output_Speed = SPEED_10M;
@@ -245,6 +249,7 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
 			GPIO_init(GPIOB, &GPIO_pinConfig);
 			//MISO
 			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
+			GPIO_pinConfig.Output_Speed = SPEED_10M;
 			GPIO_pinConfig.Pin_Number = PIN_14;
 			GPIO_init(GPIOB, &GPIO_pinConfig);
 		}
@@ -260,32 +265,30 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
  * @param [in]		- PollingEn: Enables or disables the polling mechanism
  */
 void SPI_RXTX(SPI_Registers_t *SPIx, uint16 *pData,
-		enum Polling_Mechanism PollingEn) {
-	if (PollingEn == Enable) {
-		while (!((SPIx->SR) & TXE_PIN))
-			;
+		enum PollingMechanism PollingEn) {
+	if (PollingEn ==Pollingenable ) {
+		while (!((SPIx->SR) & TXE_PIN));
 	}
-	SPIx->DR |= *pData;
-	if (PollingEn == Enable) {
-		while (!((SPIx->SR) & RXNE_PIN))
-			;
+	SPIx->DR = *pData;
+	if (PollingEn == Pollingenable) {
+		while (!((SPIx->SR) & RXNE_PIN));
 	}
 	*pData = SPIx->DR;
 }
 
 //ISR
-void SPI1_IRQHandler() {
+void SPI1_IRQHandler(void) {
 	struct IRQ_source_t IRQ;
 	IRQ.TXE = ((SPI1->SR & (1 << 1)) >> 1);
-	IRQ.RXNE = ((SPI1->SR & (1 << 1)) >> 0);
-	IRQ.ERRI = ((SPI1->SR & (1 << 1)) >> 4);
+	IRQ.RXNE = ((SPI1->SR & (1 << 0)) >> 0);
+	IRQ.ERRI = ((SPI1->SR & (1 << 4)) >> 4);
 	Global_SPI_pinConfig[SPI1_Index]->P_CallBackFun(IRQ);
 }
 
-void SPI2_IRQHandler() {
+void SPI2_IRQHandler(void) {
 	struct IRQ_source_t IRQ;
 	IRQ.TXE = ((SPI2->SR & (1 << 1)) >> 1);
-	IRQ.RXNE = ((SPI2->SR & (1 << 1)) >> 0);
-	IRQ.ERRI = ((SPI2->SR & (1 << 1)) >> 4);
+	IRQ.RXNE = ((SPI2->SR & (1 << 0)) >> 0);
+	IRQ.ERRI = ((SPI2->SR & (1 << 4)) >> 4);
 	Global_SPI_pinConfig[SPI2_Index]->P_CallBackFun(IRQ);
 }
