@@ -1,4 +1,4 @@
-# I2C Driver Readme
+# I2C Driver 
 
 ## Introduction
 The `I2C.c` file is an I2C (Inter-Integrated Circuit) driver for embedded systems. It provides functions and configurations to work with I2C communication using the STM32 microcontroller family. This driver supports both master and slave modes of I2C communication.
