@@ -1,4 +1,4 @@
-# EEPROM Example with LCD
+# RTC Example with LCD
 
 
 ```C
