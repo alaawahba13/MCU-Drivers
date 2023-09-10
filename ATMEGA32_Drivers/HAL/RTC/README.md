@@ -26,3 +26,24 @@ int main(void) {
 ```
 ### Output
 
+
+
+##### 12 Hour mode
+
+
+
+https://github.com/alaawahba13/MCU-Drivers/assets/101985923/9ee64d24-88da-4d6e-97f7-2f096136e56c
+
+
+
+##### 24 Hour mode
+
+
+
+
+https://github.com/alaawahba13/MCU-Drivers/assets/101985923/16ac0ca5-f16d-4a90-a2ec-94e9e5781be5
+
+
+
+
+
