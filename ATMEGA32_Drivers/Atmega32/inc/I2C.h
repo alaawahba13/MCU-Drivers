@@ -13,17 +13,18 @@
 #include "../../Library/BIT_MATH.h"
 
 #define MASTER_Mode
-// #define SLAVE_Mode
+ //#define SLAVE_Mode
 
 
 #define prescalar 		1		// Has values of 1 , 4 , 16 , 64
+#define SCL_Clock 			100000UL  //SCL frequency is 50K for 16Mhz
 
-void I2C_init(unsigned long SCL_Clock);
+void I2C_init();
 void I2C_Start();
 void I2C_Stop();
 void I2C_Write(uint8 data);
-uint8 I2C_Read();
-
+uint8 I2C_Read(uint8 ack);
+void I2C_SendSlaveAddress(uint8 slaveAddress, uint8 Direction);
 //Slave Functions
 
 void I2C_setAddress(uint8 address);
