@@ -71,3 +71,33 @@ uint32 RCC_getHCKL_Freq(void){
 	/* Get HCLK source and Compute PCLK1 frequency ---------------------------*/
 	return (RCC_getSYSCLK_Freq() >> AHB_PrescTable[((RCC->CFGR >> 4) &0b1111)]);
 }
+
+
+void RCC_CLK_EN(uint8 busID , uint8 periphralID){
+	switch(busID){
+	case APB1_ID:
+		RCC->ABP1ENR |= (1<<periphralID);
+		break;
+	case APB2_ID:
+		RCC->ABP2ENR |= (1<<periphralID);
+		break;
+	case AHB_ID:
+		RCC->AHBENR |= (1<<periphralID);
+		break;
+	}
+}
+
+void RCC_CLK_RST(uint8 busID , uint8 periphralID){
+	switch(busID){
+		case APB1_ID:
+			RCC->ABP1ENR |= (1<<periphralID);
+			break;
+		case APB2_ID:
+			RCC->ABP1ENR |= (1<<periphralID);
+			break;
+		case AHB_ID:
+			RCC->AHBENR &= ~(1<<periphralID);
+			break;
+		}
+}
+
