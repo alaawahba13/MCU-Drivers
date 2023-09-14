@@ -8,10 +8,11 @@
 #ifndef KEYPAD_DRIVER_KEYPAD_H_
 #define KEYPAD_DRIVER_KEYPAD_H_
 
-#include "GPIO.h"
+#include "../../STM32_F103C6_Drivers/inc/GPIO.h"
 
 //Define the PORT  connected to keypad
-#define Keypad_PORT   		GPIOB
+#define Keypad_Row_PORT   		GPIOB
+#define Keypad_COL_PORT   		GPIOB
 
 
 // Define the Keypad Cols & Rows pins
@@ -27,5 +28,15 @@
 
 void Keypad_init();
 char Keypad_Get_Key();
+
+//define keypad keys
+
+static const char arr_keys[4][4]=
+{{'7','8','9','/'},
+ {'4','5','6','*'},
+ {'1','2','3','-'},
+ {'?','0','=','+'}
+
+};
 
 #endif /* KEYPAD_DRIVER_KEYPAD_H_ */
