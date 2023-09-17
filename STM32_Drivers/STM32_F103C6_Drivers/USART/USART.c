@@ -15,7 +15,7 @@
  * 							Generic Variables
  * =======================================================================================
  */
-USART_pinConfig_t* Global_pinConfig[3] = {NULL,NULL,NULL};
+USART_pinConfig_t Global_pinConfig[3] = {NULL,NULL,NULL};
 
 #define USART1_Index 			0
 #define USART2_Index 			1
@@ -40,14 +40,14 @@ void USART_init(USART_pinConfig_t *pinConfig, USART_Registers_t *USARTx) {
 
 	/*            Enable USART clocks      */
 	if (USARTx == USART1) {
-		Global_pinConfig[USART1_Index] = pinConfig;
+		Global_pinConfig[USART1_Index] = *pinConfig;
 		RCC_CLK_EN(APB2_ID,USART1_ID);
 	}
 	if (USARTx == USART2) {
-		Global_pinConfig[USART2_Index] = pinConfig;
+		Global_pinConfig[USART2_Index] = *pinConfig;
 		RCC_CLK_EN(APB1_ID,USART2_ID);
 	} else if (USARTx == USART3) {
-		Global_pinConfig[USART3_Index] = pinConfig;
+		Global_pinConfig[USART3_Index] = *pinConfig;
 		RCC_CLK_EN(APB1_ID,USART3_ID);
 	}
 
@@ -131,14 +131,14 @@ void USART_SetPins(USART_Registers_t *USARTx) {
 		GPIO_pinConfig.Pin_Number = PIN_10;
 		GPIO_init(GPIOA, &GPIO_pinConfig);
 		// Configure CTS /RTS pins
-		if (Global_pinConfig[USART1_Index]->FlowControl == USART_FlowControl_CTS
-				|| Global_pinConfig[USART1_Index]->FlowControl == USART_FlowControl_BOTH) {
+		if (Global_pinConfig[USART1_Index].FlowControl == USART_FlowControl_CTS
+				|| Global_pinConfig[USART1_Index].FlowControl == USART_FlowControl_BOTH) {
 			// CTS pin PORTA pin 11 As   Alternate function INPUT
 			GPIO_pinConfig.MODE = MODE_INPUT_FLO;
 			GPIO_pinConfig.Pin_Number = PIN_11;
 			GPIO_init(GPIOA, &GPIO_pinConfig);
-		} else if (Global_pinConfig[USART1_Index]->FlowControl == USART_FlowControl_RTS
-				|| Global_pinConfig[USART1_Index]->FlowControl == USART_FlowControl_BOTH) {
+		} else if (Global_pinConfig[USART1_Index].FlowControl == USART_FlowControl_RTS
+				|| Global_pinConfig[USART1_Index].FlowControl == USART_FlowControl_BOTH) {
 			// RTS pin PORTA pin 12 As   Alternate function  Push pull
 			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
 			GPIO_pinConfig.Output_Speed = SPEED_10M;
@@ -157,12 +157,12 @@ void USART_SetPins(USART_Registers_t *USARTx) {
 		GPIO_pinConfig.Pin_Number = PIN_3;
 		GPIO_init(GPIOA, &GPIO_pinConfig);
 		// Configure CTS /RTS pins
-		if (Global_pinConfig[USART2_Index]->FlowControl == USART_FlowControl_CTS|| Global_pinConfig[USART2_Index]->FlowControl == USART_FlowControl_BOTH) {
+		if (Global_pinConfig[USART2_Index].FlowControl == USART_FlowControl_CTS|| Global_pinConfig[USART2_Index].FlowControl == USART_FlowControl_BOTH) {
 			// CTS pin PORTA pin 0 As   Alternate function INPUT
 			GPIO_pinConfig.MODE = MODE_INPUT_FLO;
 			GPIO_pinConfig.Pin_Number = PIN_0;
 			GPIO_init(GPIOA, &GPIO_pinConfig);
-		} else if (Global_pinConfig[USART2_Index]->FlowControl == USART_FlowControl_RTS|| Global_pinConfig[USART2_Index]->FlowControl == USART_FlowControl_BOTH) {
+		} else if (Global_pinConfig[USART2_Index].FlowControl == USART_FlowControl_RTS|| Global_pinConfig[USART2_Index].FlowControl == USART_FlowControl_BOTH) {
 			// RTS pin PORTA pin 1 As   Alternate function  Push pull
 			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
 			GPIO_pinConfig.Output_Speed = SPEED_10M;
@@ -181,12 +181,12 @@ void USART_SetPins(USART_Registers_t *USARTx) {
 		GPIO_pinConfig.Pin_Number = PIN_11;
 		GPIO_init(GPIOB, &GPIO_pinConfig);
 		// Configure CTS /RTS pins
-		if (Global_pinConfig[USART3_Index]->FlowControl == USART_FlowControl_CTS|| Global_pinConfig[USART3_Index]->FlowControl == USART_FlowControl_BOTH) {
+		if (Global_pinConfig[USART3_Index].FlowControl == USART_FlowControl_CTS|| Global_pinConfig[USART3_Index].FlowControl == USART_FlowControl_BOTH) {
 			// CTS pin PORTB pin 13 As   Alternate function INPUT
 			GPIO_pinConfig.MODE = MODE_INPUT_AF;
 			GPIO_pinConfig.Pin_Number = PIN_13;
 			GPIO_init(GPIOB, &GPIO_pinConfig);
-		} else if (Global_pinConfig[USART3_Index]->FlowControl == USART_FlowControl_RTS || Global_pinConfig[USART3_Index]->FlowControl == USART_FlowControl_BOTH) {
+		} else if (Global_pinConfig[USART3_Index].FlowControl == USART_FlowControl_RTS || Global_pinConfig[USART3_Index].FlowControl == USART_FlowControl_BOTH) {
 			// RTS pin PORTB pin 14 As   Alternate function  Push pull
 			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
 			GPIO_pinConfig.Output_Speed = SPEED_10M;
@@ -222,7 +222,7 @@ void USART_Send(USART_Registers_t *USARTx, uint16 *pTxBuffer,
 		while (!(USARTx->SR & (1 << 7)))
 			;	//TXE bit is 1 means Data is completely sent.
 
-	if (Global_pinConfig[index]->DataLength == USART_DataLength9) {
+	if (Global_pinConfig[index].DataLength == USART_DataLength9) {
 		USARTx->DR = (*pTxBuffer & (uint16)0x01FF);
 	} else {
 		USARTx->DR = (*pTxBuffer & (uint8)0xFF);
@@ -251,8 +251,8 @@ void USART_Recieve(USART_Registers_t *USARTx, uint16 *pTxBuffer,
 			;
 	//Check The Data length
 
-	if (Global_pinConfig[index]->DataLength == USART_DataLength9) {
-		if (Global_pinConfig[index]->Parity == USART_Parity_None) {
+	if (Global_pinConfig[index].DataLength == USART_DataLength9) {
+		if (Global_pinConfig[index].Parity == USART_Parity_None) {
 			// case No parity
 				*((uint16 *)pTxBuffer)= USARTx->DR;
 
@@ -262,7 +262,7 @@ void USART_Recieve(USART_Registers_t *USARTx, uint16 *pTxBuffer,
 		}
 
 	} else {
-		if (Global_pinConfig[index]->Parity == USART_Parity_None) {
+		if (Global_pinConfig[index].Parity == USART_Parity_None) {
 			// case No parity
 			*((uint16 *)pTxBuffer) = (USARTx->DR & (uint8)0xFF);
 
@@ -292,11 +292,11 @@ void USART_Wait_TC(USART_Registers_t *USARTx) {
 
 // ISR
 void USART1_IRQHandler(){
-	Global_pinConfig[USART1_Index]->P_CallBack_Fun();
+	Global_pinConfig[USART1_Index].P_CallBack_Fun();
 }
 void USART2_IRQHandler(){
-	Global_pinConfig[USART2_Index]->P_CallBack_Fun();
+	Global_pinConfig[USART2_Index].P_CallBack_Fun();
 }
 void USART3_IRQHandler(){
-	Global_pinConfig[USART3_Index]->P_CallBack_Fun();
+	Global_pinConfig[USART3_Index].P_CallBack_Fun();
 }
