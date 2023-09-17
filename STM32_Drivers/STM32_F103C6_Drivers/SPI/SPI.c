@@ -17,7 +17,7 @@
  * =======================================================================================
  */
 // Each array element is for Each SPI
-SPI_PinConfig_t *Global_SPI_pinConfig[2] = { NULL, NULL };
+SPI_PinConfig_t Global_SPI_pinConfig[2] = { NULL, NULL };
 
 #define SPI1_Index 			0
 #define SPI2_Index 			1
@@ -34,11 +34,11 @@ void SPI_init(SPI_PinConfig_t *SPI_pinConfig, SPI_Registers_t *SPIx) {
 
 	/*            		Enable SPI clocks  					    */
 	if (SPIx == SPI1) {
-		Global_SPI_pinConfig[SPI1_Index] = SPI_pinConfig;
-		RCC_SPI1_CLK_EN();
+		Global_SPI_pinConfig[SPI1_Index] = *SPI_pinConfig;
+		RCC_CLK_EN(APB2_ID,SPI1_ID);
 	} else if (SPIx == SPI2) {
-		Global_SPI_pinConfig[SPI2_Index] = SPI_pinConfig;
-		RCC_SPI2_CLK_EN();
+		Global_SPI_pinConfig[SPI2_Index] = *SPI_pinConfig;
+		RCC_CLK_EN(APB1_ID,SPI2_ID);
 	}
 
 	/*			Enable SPI Module       */
@@ -55,9 +55,9 @@ void SPI_init(SPI_PinConfig_t *SPI_pinConfig, SPI_Registers_t *SPIx) {
 	tmpreg_CR1 |= SPI_pinConfig->BaudRate;
 
 	/*			Configure NSS		*/
-	if (SPI_pinConfig->NSS == SPI_NSS_Hard_Master_SS_output_enable)
+	if (SPI_pinConfig->NSS == SPI_NSS_Hard_Master_output_enable)
 		tmpreg_CR2 |= SPI_pinConfig->NSS;
-	else if (SPI_pinConfig->NSS == SPI_NSS_Hard_Master_SS_output_disable || SPI_pinConfig->NSS == SPI_NSS_Hard_Slave)
+	else if (SPI_pinConfig->NSS == SPI_NSS_Hard_Master_output_disable || SPI_pinConfig->NSS == SPI_NSS_Hard_Slave)
 		tmpreg_CR2 &= SPI_pinConfig->NSS;
 	else
 		tmpreg_CR1 |= SPI_pinConfig->NSS;
@@ -95,10 +95,10 @@ void SPI_init(SPI_PinConfig_t *SPI_pinConfig, SPI_Registers_t *SPIx) {
  */
 void SPI_DeInit(SPI_Registers_t *SPIx) {
 	if (SPIx == SPI1) {
-		RCC_SPI1_CLK_Reset();
+		RCC_CLK_RST(APB2_ID,SPI1_ID);
 		NVIC_Disable(SPI1_IRQ_LineNumber);
 	} else if (SPIx == SPI2) {
-		RCC_SPI2_CLK_Reset();
+		RCC_CLK_RST(APB1_ID,SPI2_ID);
 		NVIC_Disable(SPI2_IRQ_LineNumber);
 	}
 
@@ -144,16 +144,16 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
 	GPIO_PinConfig_t GPIO_pinConfig;
 	if (SPIx == SPI1) {
 		// MASTER
-		if (Global_SPI_pinConfig[SPI1_Index]->SPI_Mode == SPI_Mode_Master) {
+		if (Global_SPI_pinConfig[SPI1_Index].SPI_Mode == SPI_Mode_Master) {
 			// NSS
-			switch(Global_SPI_pinConfig[SPI1_Index]->NSS)
+			switch(Global_SPI_pinConfig[SPI1_Index].NSS)
 			{
-				case SPI_NSS_Hard_Master_SS_output_disable :
+				case SPI_NSS_Hard_Master_output_disable :
 				GPIO_pinConfig.MODE = MODE_INPUT_FLO;
 				GPIO_pinConfig.Pin_Number = PIN_4;
 				GPIO_init(GPIOA, &GPIO_pinConfig);
 				break;
-				case SPI_NSS_Hard_Master_SS_output_enable :
+				case SPI_NSS_Hard_Master_output_enable :
 				GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
 				GPIO_pinConfig.Output_Speed = SPEED_10M;
 				GPIO_pinConfig.Pin_Number = PIN_4;
@@ -178,7 +178,7 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
 		// SLAVE
 		else {
 			//NSS
-			if (Global_SPI_pinConfig[SPI1_Index]->SPI_Mode == SPI_NSS_Hard_Slave) {
+			if (Global_SPI_pinConfig[SPI1_Index].SPI_Mode == SPI_NSS_Hard_Slave) {
 				GPIO_pinConfig.MODE = MODE_INPUT_FLO;
 				GPIO_pinConfig.Pin_Number = PIN_4;
 				GPIO_init(GPIOA, &GPIO_pinConfig);
@@ -200,17 +200,17 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
 
 	} else if (SPIx == SPI2) {
 		// MASTER
-		if (Global_SPI_pinConfig[SPI2_Index]->SPI_Mode == SPI_Mode_Master) {
+		if (Global_SPI_pinConfig[SPI2_Index].SPI_Mode == SPI_Mode_Master) {
 			// NSS
 
-			switch(Global_SPI_pinConfig[SPI2_Index]->NSS)
+			switch(Global_SPI_pinConfig[SPI2_Index].NSS)
 			{
-				case SPI_NSS_Hard_Master_SS_output_disable :
+				case SPI_NSS_Hard_Master_output_disable :
 				GPIO_pinConfig.MODE = MODE_INPUT_FLO;
 				GPIO_pinConfig.Pin_Number = PIN_12;
 				GPIO_init(GPIOB, &GPIO_pinConfig);
 				break;
-				case SPI_NSS_Hard_Master_SS_output_enable :
+				case SPI_NSS_Hard_Master_output_enable :
 				GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
 				GPIO_pinConfig.Output_Speed = SPEED_10M;
 				GPIO_pinConfig.Pin_Number = PIN_12;
@@ -235,7 +235,7 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
 		// SLAVE
 		else {
 			//NSS
-			if (Global_SPI_pinConfig[SPI2_Index]->SPI_Mode == SPI_NSS_Hard_Slave) {
+			if (Global_SPI_pinConfig[SPI2_Index].SPI_Mode == SPI_NSS_Hard_Slave) {
 				GPIO_pinConfig.MODE = MODE_INPUT_FLO;
 				GPIO_pinConfig.Pin_Number = PIN_12;
 				GPIO_init(GPIOB, &GPIO_pinConfig);
@@ -282,7 +282,7 @@ void SPI1_IRQHandler(void) {
 	IRQ.TXE = ((SPI1->SR & (1 << 1)) >> 1);
 	IRQ.RXNE = ((SPI1->SR & (1 << 0)) >> 0);
 	IRQ.ERRI = ((SPI1->SR & (1 << 4)) >> 4);
-	Global_SPI_pinConfig[SPI1_Index]->P_CallBackFun(IRQ);
+	Global_SPI_pinConfig[SPI1_Index].P_CallBackFun(IRQ);
 }
 
 void SPI2_IRQHandler(void) {
@@ -290,5 +290,5 @@ void SPI2_IRQHandler(void) {
 	IRQ.TXE = ((SPI2->SR & (1 << 1)) >> 1);
 	IRQ.RXNE = ((SPI2->SR & (1 << 0)) >> 0);
 	IRQ.ERRI = ((SPI2->SR & (1 << 4)) >> 4);
-	Global_SPI_pinConfig[SPI2_Index]->P_CallBackFun(IRQ);
+	Global_SPI_pinConfig[SPI2_Index].P_CallBackFun(IRQ);
 }
