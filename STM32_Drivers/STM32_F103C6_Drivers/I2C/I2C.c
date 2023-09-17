@@ -33,10 +33,10 @@ void I2C_init(I2C_pinConfig_t *I2C_pinConfig, I2C_Registers_t *I2Cx) {
 	/*            		Enable I2C clocks  					    */
 	if (I2Cx == I2C1) {
 		Global_I2C_pinConfig[I2C1_Index] = *I2C_pinConfig;
-		RCC_I2C1_CLK_EN();
+		RCC_CLK_EN(APB1_ID,I2C1_ID);
 	} else if (I2Cx == I2C2) {
 		Global_I2C_pinConfig[I2C2_Index] = *I2C_pinConfig;
-		RCC_I2C2_CLK_EN();
+		RCC_CLK_EN(APB1_ID,I2C2_ID);
 	}
 
 	if (I2C_pinConfig->I2C_Mode == I2C_Mode_I2C) {
@@ -64,7 +64,6 @@ void I2C_init(I2C_pinConfig_t *I2C_pinConfig, I2C_Registers_t *I2Cx) {
 		tmpreg = 0;
 
 		if ((I2C_pinConfig->Clock_Speed == I2C_CLK_SM_100K)	|| (I2C_pinConfig->Clock_Speed == I2C_CLK_SM_50K)) {
-			//result = (uint16) (pclk1 / (I2C_pinConfig->Clock_Speed << 1)); // shift means multiplication
 			result = (uint16)(pclk1 / ( I2C_pinConfig->Clock_Speed << 1   )   );
 
 			tmpreg |= result;
@@ -121,11 +120,11 @@ void I2C_init(I2C_pinConfig_t *I2C_pinConfig, I2C_Registers_t *I2Cx) {
 }
 void I2C_Deinit(I2C_Registers_t *I2Cx) {
 	if (I2Cx == I2C1) {
-		RCC_I2C1_CLK_Reset();
+		RCC_CLK_RST(APB1_ID,I2C1_ID);
 		NVIC_Disable(I2C1_ER_LineNumber);
 		NVIC_Disable(I2C1_EV_LineNumber);
 	} else if (I2Cx == I2C2) {
-		RCC_I2C2_CLK_Reset();
+		RCC_CLK_RST(APB1_ID,I2C2_ID);
 		NVIC_Disable(I2C2_ER_LineNumber);
 		NVIC_Disable(I2C2_EV_LineNumber);
 	}
