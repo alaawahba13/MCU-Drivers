@@ -25,17 +25,19 @@
 #define C2 					PIN_7
 #define C3					PIN_8
 
+#define KPD_MAX_COLS			3
+
 
 void Keypad_init();
 char Keypad_Get_Key();
 
 //define keypad keys
 
-static const char arr_keys[4][4]=
-{{'7','8','9','/'},
- {'4','5','6','*'},
- {'1','2','3','-'},
- {'?','0','=','+'}
+static const char arr_keys[4][KPD_MAX_COLS]=
+{{'#','0','*'},
+ {'7','8','9'},
+ {'4','5','6'},
+ {'1','2','3'}
 
 };
 
