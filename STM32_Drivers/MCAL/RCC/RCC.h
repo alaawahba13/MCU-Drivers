@@ -19,6 +19,22 @@
 #define HSI 		(uint32)8000000
 #define HSE 		(uint32)16000000
 
+typedef enum{
+	RCC_HSE= 0x01,
+	RCC_HSI = 0x00,
+	RCC_PLL = 0x10
+}RCC_CLKSrc_t;
+
+typedef enum{
+	HSE_CRYSTAL,
+	HSE_RC
+}RCC_HSESrc_t;
+
+typedef enum{
+	PLL_HSE,
+	PLL_HSI
+}RCC_PLLSrc_t;
+
 // @ref BUS_ID_define
 #define APB1_ID 		0
 #define APB2_ID 		1
@@ -56,6 +72,7 @@ uint32 RCC_getPCKL1_Freq(void);
 uint32 RCC_getPCKL2_Freq(void);
 uint32 RCC_getHCKL_Freq(void);
 
+void RCC_init(RCC_CLKSrc_t clkSrc, RCC_HSESrc_t HSESrc, RCC_PLLSrc_t PLLSrc );
 void RCC_CLK_RST(uint8 busID , uint8 periphralID);
 void RCC_CLK_EN(uint8 busID , uint8 periphralID);
 
