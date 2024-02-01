@@ -7,26 +7,9 @@
 
 #ifndef LCD_H_
 #define LCD_H_
-#include "../../STM32_F103C6_Drivers/inc/GPIO.h"
-#include "../../Library/BIT_MATH.h"
+#include "../../MCAL/GPIO/GPIO.h"
+#include "../../MCAL/Lib/BIT_MATH.h"
 
-/*This is used for lcd data pins D0-D7 */
-//#define LCD_PORT 				GPIOA
-/* This is used for three control pins RS, RW, Enable */
-//#define LCD_CONTROL_PORT 		GPIOA
-// define the three control pins connected to MCU
-//#define ENABLE_SWITCH			PIN_6
-//#define REGISTER_SELECT         PIN_5
-/*
-#define D0 						PIN_0
-#define D1 						PIN_1
-#define D2 						PIN_2
-#define D3 						PIN_3
-#define D4 						PIN_12
-#define D5 						PIN_13
-#define D6 						PIN_14
-#define D7 						PIN_15
-*/
 typedef struct {
 	uint8 MODE;			// @ref LCD_MODE_t
 	uint8 LCD_Size;		// @ref LCD_SIZE

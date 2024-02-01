@@ -7,8 +7,7 @@
 
 #ifndef LCD_H_
 #define LCD_H_
-#include "GPIO.h"
-#include "../../Library/BIT_MATH.h"
+#include "../../MCAL/GPIO/GPIO.h"
 
 /*This is used for lcd data pins D0-D7 */
 #define LCD_PORT 				GPIOA

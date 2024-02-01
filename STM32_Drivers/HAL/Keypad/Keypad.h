@@ -8,7 +8,7 @@
 #ifndef KEYPAD_DRIVER_KEYPAD_H_
 #define KEYPAD_DRIVER_KEYPAD_H_
 
-#include "../../STM32_F103C6_Drivers/inc/GPIO.h"
+#include "../../MCAL/GPIO/GPIO.h"
 
 //Define the PORT  connected to keypad
 #define Keypad_Row_PORT   		GPIOB
