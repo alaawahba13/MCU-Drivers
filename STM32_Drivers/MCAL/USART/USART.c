@@ -15,7 +15,7 @@
  * 							Generic Variables
  * =======================================================================================
  */
-USART_pinConfig_t Global_pinConfig[3] = {NULL,NULL,NULL};
+static USART_pinConfig_t Global_pinConfig[3] = {NULL,NULL,NULL};
 
 #define USART1_Index 			0
 #define USART2_Index 			1
@@ -80,11 +80,11 @@ void USART_init(USART_pinConfig_t *pinConfig, USART_Registers_t *USARTx) {
 		USARTx->CR1 |= (pinConfig->IRQ_Enable);
 		//		Enable NVIC For USARTx IRQ
 		if (USARTx == USART1) {
-			NVIC_Enable(USART1_LineNumber);
+			NVIC_Enable(NVIC_USART1);
 		}else if (USARTx == USART2) {
-			NVIC_Enable(USART2_LineNumber);
+			NVIC_Enable(NVIC_USART2);
 		} else if (USARTx == USART3) {
-			NVIC_Enable(USART3_LineNumber);
+			NVIC_Enable(NVIC_USART3);
 		}
 	}
 }
@@ -99,14 +99,14 @@ void USART_DeInit(USART_Registers_t *USARTx) {
 
 	if (USARTx == USART1) {
 		RCC_CLK_RST(APB2_ID,USART1_ID);
-		NVIC_Disable(USART1_LineNumber);
+		NVIC_Disable(NVIC_USART1);
 	}
 	if (USARTx == USART2) {
 		RCC_CLK_RST(APB1_ID,USART2_ID);
-		NVIC_Disable(USART2_LineNumber);
+		NVIC_Disable(NVIC_USART2);
 	} else if (USARTx == USART3) {
 		RCC_CLK_RST(APB1_ID,USART3_ID);
-		NVIC_Disable(USART3_LineNumber);
+		NVIC_Disable(NVIC_USART3);
 	}
 
 }

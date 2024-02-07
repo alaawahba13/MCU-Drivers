@@ -131,13 +131,6 @@ typedef struct{
 #define I2C_SACK_DIS						0
 
 
-/*
- * @ref I2C_IRQ_LineNumber
- */
-#define I2C1_EV_LineNumber						31
-#define I2C1_ER_LineNumber						32
-#define I2C2_EV_LineNumber						33
-#define I2C2_ER_LineNumber						34
 
 /*
 * ===============================================

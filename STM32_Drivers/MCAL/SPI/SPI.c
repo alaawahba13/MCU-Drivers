@@ -71,14 +71,14 @@ void SPI_init(SPI_PinConfig_t *SPI_pinConfig, SPI_Registers_t *SPIx) {
 	if (SPI_pinConfig->IRQ_Enable != SPI_IRQ_EN_None) {
 		tmpreg_CR2 |= SPI_pinConfig->IRQ_Enable;
 		if (SPIx == SPI1)
-			NVIC_Enable(SPI1_IRQ_LineNumber);
+			NVIC_Enable(NVIC_SPI1);
 		else if (SPIx == SPI2)
-			NVIC_Enable(SPI2_IRQ_LineNumber);
+			NVIC_Enable(NVIC_SPI2);
 	} else {
 		if (SPIx == SPI1)
-			NVIC_Disable(SPI1_IRQ_LineNumber);
+			NVIC_Disable(NVIC_SPI1);
 		else if (SPIx == SPI2)
-			NVIC_Disable(SPI2_IRQ_LineNumber);
+			NVIC_Disable(NVIC_SPI2);
 	}
 
 	SPIx->CR1 = tmpreg_CR1;
@@ -96,10 +96,10 @@ void SPI_init(SPI_PinConfig_t *SPI_pinConfig, SPI_Registers_t *SPIx) {
 void SPI_DeInit(SPI_Registers_t *SPIx) {
 	if (SPIx == SPI1) {
 		RCC_CLK_RST(APB2_ID,SPI1_ID);
-		NVIC_Disable(SPI1_IRQ_LineNumber);
+		NVIC_Disable(NVIC_SPI1);
 	} else if (SPIx == SPI2) {
 		RCC_CLK_RST(APB1_ID,SPI2_ID);
-		NVIC_Disable(SPI2_IRQ_LineNumber);
+		NVIC_Disable(NVIC_SPI2);
 	}
 
 }

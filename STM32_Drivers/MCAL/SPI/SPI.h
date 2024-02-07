@@ -111,11 +111,6 @@ typedef struct{
 #define SPI_IRQ_EN_TXEIE					(uint32)(1<<7)
 #define SPI_IRQ_EN_RXNEIE					(uint32)(1<<6)
 #define SPI_IRQ_EN_ERRIE					(uint32)(1<<5)
-/*
- * @ref SPI_IRQ_LineNumber
- */
-#define SPI1_IRQ_LineNumber			35
-#define SPI2_IRQ_LineNumber			36
 
 
 

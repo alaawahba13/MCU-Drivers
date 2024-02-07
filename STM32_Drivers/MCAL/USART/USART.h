@@ -116,13 +116,6 @@ enum Polling_Mechanism{
 #define USART_PE								(uint32)(1<<8)
 
 /*
- * @ref USART_IRQ_LineNumber
- */
-#define USART1_LineNumber						37
-#define USART2_LineNumber						38
-#define USART3_LineNumber						39
-
-/*
  * Baud Rate Calculation
  */
 #define USARTDIV(FCLK, BaudRate)				(FCLK / (16*BaudRate))

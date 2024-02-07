@@ -151,41 +151,6 @@ void Update_EXTI(EXTI_PinConfig_t *pinConfig) {
 
 }
 
-/**================================================================
- * @Fn				- NVIC_Enable
- * @brief 			- Enables the NVIC interrupt pin
- * @param [in]	    - IRQ_Number :  The specified Interrupt Number to be enabled
- * @retval 			- none
- */
-
-void NVIC_Enable(uint8 IRQ_Number) {
-	if ((IRQ_Number >= 0) && (IRQ_Number <= 31)) {
-	 NVIC_ISER->ISER0 |= (1 << IRQ_Number);
-	 } else if ((IRQ_Number >= 32) && (IRQ_Number <= 63)) {
-	 NVIC_ISER->ISER1 |= (1 << (IRQ_Number-32));
-	 } else if ((IRQ_Number >= 64) && (IRQ_Number <= 67)) {
-	 NVIC_ISER->ISER2 |= (1 << (IRQ_Number-32));
-	 }
-}
-/**================================================================
- * @Fn				- NVIC_Disable
- * @brief 			- Disables the NVIC interrupt pin
- * @param [in]	    - IRQ_Number :  The specified Interrupt Number to be disabled
- * @retval 			- none
- */
-
-void NVIC_Disable(uint8 IRQ_Number) {
-
-	if ((IRQ_Number >= 0) && (IRQ_Number <= 31)) {
-	 NVIC_ICER->ICER0 |= (1 << IRQ_Number);
-	 } else if ((IRQ_Number >= 32) && (IRQ_Number <= 63)) {
-	 NVIC_ICER->ICER1 |= (1 << (IRQ_Number-32));
-	 } else if ((IRQ_Number >= 64) && (IRQ_Number <= 67)) {
-	 NVIC_ICER->ICER2 |= (1 << (IRQ_Number-32));
-	 }
-
-}
-
 /*
  * ===============================================
  *      APIs Supported by "MCAL EXTI DRIVER"
@@ -224,13 +189,13 @@ void EXTI_deInit(void) {
 	EXTI->SWIER = 0x0000;
 	EXTI->PR = 0xFFFF;
 	// Reset NVIC Registers
-	NVIC_Disable(EXTI_IRQ_0);
-	NVIC_Disable(EXTI_IRQ_1);
-	NVIC_Disable(EXTI_IRQ_2);
-	NVIC_Disable(EXTI_IRQ_3);
-	NVIC_Disable(EXTI_IRQ_4);
-	NVIC_Disable(EXTI_IRQ_5);
-	NVIC_Disable(EXTI_IRQ_10);
+	NVIC_Disable(NVIC_EXTI0);
+	NVIC_Disable(NVIC_EXTI1);
+	NVIC_Disable(NVIC_EXTI2);
+	NVIC_Disable(NVIC_EXTI3);
+	NVIC_Disable(NVIC_EXTI4);
+	NVIC_Disable(NVIC_EXTI5);
+	NVIC_Disable(NVIC_EXTI10);
 
 }
 

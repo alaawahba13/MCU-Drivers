@@ -104,12 +104,12 @@ void I2C_init(I2C_pinConfig_t *I2C_pinConfig, I2C_Registers_t *I2Cx) {
 	if (I2C_pinConfig->P_Slave_CallBack_Fun != NULL) {
 		I2Cx->CR2 |= (1 << 8) | (1 << 9) | (1 << 10);
 		if (I2Cx == I2C1) {
-			NVIC_Enable(I2C1_EV_LineNumber);
-			NVIC_Enable(I2C1_ER_LineNumber);
+			NVIC_Enable(NVIC_I2C1_EV);
+			NVIC_Enable(NVIC_I2C1_ER);
 
 		} else if (I2Cx == I2C2) {
-			NVIC_Enable(I2C2_EV_LineNumber);
-			NVIC_Enable(I2C2_ER_LineNumber);
+			NVIC_Enable(NVIC_I2C1_EV);
+			NVIC_Enable(NVIC_I2C1_ER);
 
 		}
 	}
@@ -121,12 +121,12 @@ void I2C_init(I2C_pinConfig_t *I2C_pinConfig, I2C_Registers_t *I2Cx) {
 void I2C_Deinit(I2C_Registers_t *I2Cx) {
 	if (I2Cx == I2C1) {
 		RCC_CLK_RST(APB1_ID,I2C1_ID);
-		NVIC_Disable(I2C1_ER_LineNumber);
-		NVIC_Disable(I2C1_EV_LineNumber);
+		NVIC_Disable(NVIC_I2C1_ER);
+		NVIC_Disable(NVIC_I2C1_EV);
 	} else if (I2Cx == I2C2) {
 		RCC_CLK_RST(APB1_ID,I2C2_ID);
-		NVIC_Disable(I2C2_ER_LineNumber);
-		NVIC_Disable(I2C2_EV_LineNumber);
+		NVIC_Disable(NVIC_I2C2_ER);
+		NVIC_Disable(NVIC_I2C2_EV);
 	}
 }
 
