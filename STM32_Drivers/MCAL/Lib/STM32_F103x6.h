@@ -12,6 +12,7 @@
 //Includes
 #include <stdio.h>
 #include "Platform_types.h"
+#include "BIT_MATH.h"
 
 //-----------------------------
 //Base addresses for Memories
@@ -43,6 +44,11 @@
 #define USART1_BASE 														0x40013800
 //SPI
 #define SPI1_BASE 															0x40013000
+//ADC
+#define ADC1_BASE 															0x40012400
+#define ADC2_BASE 															0x40012800
+#define ADC3_BASE 															0x40013C00
+
 
 
 //-----------------------------
@@ -106,17 +112,31 @@ typedef struct{
 //-*-*-*-*-*-*-*-*-*-*-*-
 //Peripheral register: NVIC
 //-*-*-*-*-*-*-*-*-*-*-*
-typedef struct{
-	volatile uint32 ISER0;
-	volatile uint32 ISER1;
-	volatile uint32 ISER2;
-}NVIC_Enable_Registers_t;
+#define ISER0   	 (*(volatile uint32*)(NVIC_BASE+0x000))
+#define ISER1   	 (*(volatile uint32*)(NVIC_BASE+0x004))
+#define ISER2   	 (*(volatile uint32*)(NVIC_BASE+0x008))
 
-typedef struct{
-	volatile uint32 ICER0;
-	volatile uint32 ICER1;
-	volatile uint32 ICER2;
-}NVIC_disable_Registers_t;
+#define ICER0   	 (*(volatile uint32*)(NVIC_BASE+0x080))
+#define ICER1   	 (*(volatile uint32*)(NVIC_BASE+0x084))
+#define ICER2   	 (*(volatile uint32*)(NVIC_BASE+0x088))
+
+#define ISPR0   	 (*(volatile uint32*)(NVIC_BASE+0x100))
+#define ISPR1   	 (*(volatile uint32*)(NVIC_BASE+0x104))
+#define ISPR2   	 (*(volatile uint32*)(NVIC_BASE+0x108))
+
+#define ICPR0   	 (*(volatile uint32*)(NVIC_BASE+0x180))
+#define ICPR1 	     (*(volatile uint32*)(NVIC_BASE+0x184))
+#define ICPR2	     (*(volatile uint32*)(NVIC_BASE+0x188))
+
+#define IABR0  		 (*(volatile uint32*)(NVIC_BASE+0x200))
+#define IABR1  		 (*(volatile uint32*)(NVIC_BASE+0x204))
+#define IABR2  		 (*(volatile uint32*)(NVIC_BASE+0x208))
+
+#define IPR	    	 ((volatile uint32*)(NVIC_BASE+0x300))
+
+#define SCB_AIRCR    (*(volatile uint32*)(NVIC_BASE+0x0C))
+
+
 
 //-*-*-*-*-*-*-*-*-*-*-*-
 //Peripheral register:  AFIO
@@ -174,6 +194,25 @@ typedef struct{
 	volatile uint32 TRISE;
 
 }I2C_Registers_t;
+
+//-*-*-*-*-*-*-*-*-*-*-*-
+//Peripheral register: ADC
+//-*-*-*-*-*-*-*-*-*-*-*
+typedef struct{
+	volatile uint32 SR;
+	volatile uint32 CR1;
+	volatile uint32 CR2;
+	volatile uint32 SMPR1;
+	volatile uint32 SMPR2;
+	volatile uint32 JOFR[4];
+	volatile uint32 HHTR;
+	volatile uint32 LTR;
+	volatile uint32 SQR[3];
+	volatile uint32 JSQR;
+	volatile uint32 JDR[4];
+	volatile uint32 DR;
+}ADC_Registers_t;
+
 //-*-*-*-*-*-*-*-*-*-*-*
 //Peripheral Instants:
 //-*-*-*-*-*-*-*-*-*-*-*
@@ -189,9 +228,6 @@ typedef struct{
 
 #define AFIO 					((AFIO_Registers_t * )(AFIO_BASE))
 
-#define NVIC_ICER 				((NVIC_disable_Registers_t *)(NVIC_BASE+0x80))
-#define NVIC_ISER 				((NVIC_Enable_Registers_t *)(NVIC_BASE))
-
 #define USART1					((USART_Registers_t * )(USART1_BASE))
 #define USART2					((USART_Registers_t * )(USART2_BASE))
 #define USART3					((USART_Registers_t * )(USART3_BASE))
@@ -202,51 +238,10 @@ typedef struct{
 #define I2C1 					((I2C_Registers_t * )(I2C1_BASE))
 #define I2C2 					((I2C_Registers_t * )(I2C2_BASE))
 
-//-*-*-*-*-*-*-*-*-*-*-*-
-//clock enable Macros:
-//-*-*-*-*-*-*-*-*-*-*-*
+#define ADC1 					((ADC_Registers_t * )(ADC1_BASE))
+#define ADC2 					((ADC_Registers_t * )(ADC2_BASE))
+#define ADC3 					((ADC_Registers_t * )(ADC3_BASE))
 
-/*#define RCC_GPIOA_CLK_EN()    (RCC->ABP2ENR |= (1<<2))
-#define RCC_GPIOB_CLK_EN()    (RCC->ABP2ENR |= (1<<3))
-#define RCC_GPIOC_CLK_EN()    (RCC->ABP2ENR |= (1<<4))
-#define RCC_GPIOD_CLK_EN()    (RCC->ABP2ENR |= (1<<5))
-#define RCC_GPIOE_CLK_EN()    (RCC->ABP2ENR |= (1<<6))
-
-#define RCC_AFIO_CLK_EN()     (RCC->ABP2ENR |= (1<<0))
-
-#define RCC_USART1_CLK_EN()   (RCC->ABP2ENR |= (1<<14))
-#define RCC_USART2_CLK_EN()   (RCC->ABP1ENR |= (1<<17))
-#define RCC_USART3_CLK_EN()   (RCC->ABP1ENR |= (1<<18))
-
-#define RCC_SPI1_CLK_EN()	  (RCC->ABP2ENR |= (1<<12))
-#define RCC_SPI2_CLK_EN()	  (RCC->ABP1ENR |= (1<<14))
-
-#define RCC_I2C1_CLK_EN()	  (RCC->ABP1ENR |= (1<<21))
-#define RCC_I2C2_CLK_EN()	  (RCC->ABP1ENR |= (1<<22))
-
-//RCC_Reset
-#define RCC_USART1_CLK_Reset()  	 (RCC->APB2RSTR |= (1<<14))
-#define RCC_USART2_CLK_Reset()  	 (RCC->APB2RSTR |= (1<<17))
-#define RCC_USART3_CLK_Reset()  	 (RCC->APB2RSTR |= (1<<18))
-
-#define RCC_SPI1_CLK_Reset()	  	 (RCC->APB2RSTR |= (1<<12))
-#define RCC_SPI2_CLK_Reset()	  	 (RCC->APB1RSTR |= (1<<14))
-
-#define RCC_I2C1_CLK_Reset()	     (RCC->APB1RSTR |= (1<<21))
-#define RCC_I2C2_CLK_Reset()	     (RCC->APB1RSTR |= (1<<22))
-
-//-*-*-*-*-*-*-*-*-*-*-*-
-//NVIC enable Macros:
-//-*-*-*-*-*-*-*-*-*-*-*
-/*#define NVIC0_Enable(IRQ_Number)		( NVIC_ISER->ISER0 |= (1 << IRQ_Number))
-#define NVIC1_Enable(IRQ_Number)		( NVIC_ISER->ISER1 |= (1 << IRQ_Number))
-#define NVIC2_Enable(IRQ_Number)		( NVIC_ISER->ISER2 |= (1 << IRQ_Number))
-
-//NVIC_Disable
-#define NVIC0_Disable(IRQ_Number)		( NVIC_ICER->ISER0 |= (1 << IRQ_Number))
-#define NVIC1_Disable(IRQ_Number)		( NVIC_ICER->ISER1 |= (1 << IRQ_Number))
-#define NVIC2_Disable(IRQ_Number)		( NVIC_ICER->ISER2 |= (1 << IRQ_Number))
-*/
 
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 //External Interrupt Macros:
@@ -271,23 +266,6 @@ typedef struct{
 #define EXTI14 				14
 #define EXTI15 				15
 
-// Interrupt request line Number
 
-#define EXTI_IRQ_0			6
-#define EXTI_IRQ_1			7
-#define EXTI_IRQ_2			8
-#define EXTI_IRQ_3			9
-#define EXTI_IRQ_4			10
-#define EXTI_IRQ_5			23
-#define EXTI_IRQ_6			23
-#define EXTI_IRQ_7			23
-#define EXTI_IRQ_8			23
-#define EXTI_IRQ_9			23
-#define EXTI_IRQ_10			40
-#define EXTI_IRQ_11			40
-#define EXTI_IRQ_12			40
-#define EXTI_IRQ_13			40
-#define EXTI_IRQ_14			40
-#define EXTI_IRQ_15			40
 
 #endif /* INC_STM32_F103X6_H_ */
