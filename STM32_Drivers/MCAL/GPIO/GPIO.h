@@ -90,6 +90,12 @@ typedef struct{
 #define PIN_LOW								0
 
 /*
+ * @ref GPIO_PORT_VALUE
+ */
+#define PORT_HIGH  							0xffff
+#define PORT_LOW							0
+
+/*
  * @ref GPIO_RET_STATE
  */
 #define RET_OK 								1
@@ -103,6 +109,7 @@ typedef struct{
 
 void GPIO_init(GPIO_Registers_t* GPIOx , GPIO_PinConfig_t* pinConfig);
 void GPIO_DeInit(GPIO_Registers_t* GPIOx);
+void GPIO_initPort(GPIO_Registers_t *GPIOx, GPIO_PinConfig_t *pinConfig);
 
 uint8 GPIO_ReadPin(GPIO_Registers_t* GPIOx , uint16 pinNumber);
 uint16 GPIO_ReadPort(GPIO_Registers_t* GPIOx );

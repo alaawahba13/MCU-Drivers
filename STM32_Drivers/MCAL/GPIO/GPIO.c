@@ -122,6 +122,15 @@ void GPIO_init(GPIO_Registers_t *GPIOx, GPIO_PinConfig_t *pinConfig) {
 	// write to CRL /CRH
 	(*config_Register) |= (register_bits << shift_bit);
 }
+
+void GPIO_initPort(GPIO_Registers_t *GPIOx, GPIO_PinConfig_t *pinConfig) {
+	uint8 numPins=16;
+	uint16 pinsArray[]={PIN_0,PIN_1,PIN_2,PIN_3,PIN_4,PIN_5,PIN_6,PIN_7,PIN_8,PIN_9,PIN_10,PIN_11,PIN_12,PIN_13,PIN_14,PIN_15};
+    for (uint8 i = 0; i < numPins; i++) {
+    	pinConfig->Pin_Number = pinsArray[i];
+        GPIO_init(GPIOx, pinConfig);
+    }
+}
 /**================================================================
  * @Fn				- GPIO_DeInit
  * @brief 			- reset all the GPIO registers
