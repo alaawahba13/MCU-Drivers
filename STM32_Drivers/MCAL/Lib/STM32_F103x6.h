@@ -23,6 +23,7 @@
 #define Periphrals_BASE 													0x40000000
 #define CORTEX_M3_Internal_Periphrals_BASE 									0xE0000000
 #define NVIC_BASE 															0xE000E100
+#define SYSTICK_BASE 														0xE000E010
 //-----------------------------
 //Base addresses for ABP2 Peripherals
 //-----------------------------
@@ -136,7 +137,15 @@ typedef struct{
 
 #define SCB_AIRCR    (*(volatile uint32*)(NVIC_BASE+0x0C))
 
-
+//-*-*-*-*-*-*-*-*-*-*-*-
+//Peripheral register:  SYSTICK
+//-*-*-*-*-*-*-*-*-*-*-*
+typedef struct{
+	volatile uint32 CTRL;
+	volatile uint32 LOAD;
+	volatile uint32 VAL;
+	volatile uint32 CALIB;
+}SYSTICK_Registers_t;
 
 //-*-*-*-*-*-*-*-*-*-*-*-
 //Peripheral register:  AFIO
@@ -205,7 +214,7 @@ typedef struct{
 	volatile uint32 SMPR1;
 	volatile uint32 SMPR2;
 	volatile uint32 JOFR[4];
-	volatile uint32 HHTR;
+	volatile uint32 HTR;
 	volatile uint32 LTR;
 	volatile uint32 SQR[3];
 	volatile uint32 JSQR;
@@ -223,6 +232,8 @@ typedef struct{
 #define GPIOE 					((GPIO_Registers_t * )(GPIOE_BASE))
 
 #define RCC 					((RCC_Registers_t  * )RCC_BASE)
+
+#define SYSTICK 				((SYSTICK_Registers_t  * )SYSTICK_BASE)
 
 #define EXTI 					((EXTI_Registers_t * )(EXTI_BASE))
 
