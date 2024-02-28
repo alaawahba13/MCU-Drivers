@@ -5,36 +5,10 @@
  *      Author: Alaa Wahba
  */
 
-#include "inc/LCD.h"
-void delay_ms(uint32 time) {
-	for (uint32 i = 0; i < time; i++)
-		for (uint32 j = 0; j < 255; j++)
-			;
+#include "LCD.h"
 
-}
 GPIO_PinConfig_t GPIO_pinConfig;
 
-void isBusy(LCD_t *LCD_Config) {
-	/* 1.Set the data port as input
-	 * 2.Set RW = 1 to read && Command mode >> RS =0
-	 * 3.Deactivate and Activate Enable
-	 */
-	// STEP ONE
-	uint32 MAX = 4;
-	if (LCD_Config->MODE == EIGHT_BIT_MODE)
-		MAX = 8;
-	for (int i = 0; i < MAX; i++) {
-		GPIO_pinConfig.MODE = MODE_INPUT_FLO;
-		GPIO_pinConfig.Pin_Number = LCD_Config->PINS[i];
-		GPIO_init(LCD_Config->LCD_PORT, &GPIO_pinConfig);
-
-	}
-	// STEP TWO
-	GPIO_WritePin(LCD_Config->LCD_CONTROL_PORT, LCD_Config->REGISTER_SELECT,
-	PIN_LOW);
-	// STEP THREE
-	lcd_kick(LCD_Config);
-}
 
 void lcd_init(LCD_t *LCD_Config) {
 
@@ -50,7 +24,7 @@ void lcd_init(LCD_t *LCD_Config) {
 	 */
 
 	// you must wait for the hardware to initialize
-	delay_ms(20);
+	STK_delayMs(20);
 	// set port as ouput to write commands
 	if (LCD_Config->MODE == EIGHT_BIT_MODE) {
 		for (int i = 0; i < 8; i++) {
@@ -83,7 +57,7 @@ void lcd_init(LCD_t *LCD_Config) {
 	GPIO_WritePin(LCD_Config->LCD_CONTROL_PORT, LCD_Config->REGISTER_SELECT,
 	PIN_LOW);
 
-	delay_ms(15);
+	STK_delayMs(15);
 	lcd_Clear_Screen(LCD_Config);
 	/* Define the lcd Mode by its instruction*/
 	if (LCD_Config->MODE == EIGHT_BIT_MODE)
@@ -109,7 +83,7 @@ void lcd_Send_Command(unsigned char command, LCD_t *LCD_Config) {
 		GPIO_WritePort(LCD_Config->LCD_PORT, command);
 		GPIO_WritePin(LCD_Config->LCD_CONTROL_PORT, LCD_Config->REGISTER_SELECT,
 		PIN_LOW);
-		delay_ms(1);
+		STK_delayMs(1);
 		lcd_kick(LCD_Config);
 	}
 
@@ -126,7 +100,7 @@ void lcd_Send_Command(unsigned char command, LCD_t *LCD_Config) {
 		GPIO_WritePin(LCD_Config->LCD_PORT, LCD_Config->PINS[3],
 				GET(command, 7));
 
-		delay_ms(1);
+		STK_delayMs(1);
 		lcd_kick(LCD_Config);
 
 		GPIO_WritePin(LCD_Config->LCD_PORT, LCD_Config->PINS[0],
@@ -138,7 +112,7 @@ void lcd_Send_Command(unsigned char command, LCD_t *LCD_Config) {
 		GPIO_WritePin(LCD_Config->LCD_PORT, LCD_Config->PINS[3],
 				GET(command, 3));
 
-		delay_ms(1);
+		STK_delayMs(1);
 		lcd_kick(LCD_Config);
 	}
 }
@@ -154,7 +128,7 @@ void lcd_Send_Char(unsigned char character, LCD_t *LCD_Config) {
 		GPIO_WritePin(LCD_Config->LCD_CONTROL_PORT, LCD_Config->REGISTER_SELECT,
 		PIN_HIGH);
 
-		delay_ms(1);
+		STK_delayMs(1);
 		lcd_kick(LCD_Config);
 	}
 	if (LCD_Config->MODE == FOUR_BIT_MODE) {
@@ -169,7 +143,7 @@ void lcd_Send_Char(unsigned char character, LCD_t *LCD_Config) {
 				GET(character, 6));
 		GPIO_WritePin(LCD_Config->LCD_PORT, LCD_Config->PINS[3],
 				GET(character, 7));
-		delay_ms(1);
+		STK_delayMs(1);
 		lcd_kick(LCD_Config);
 		GPIO_WritePin(LCD_Config->LCD_PORT, LCD_Config->PINS[0],
 				GET(character, 0));
@@ -179,7 +153,7 @@ void lcd_Send_Char(unsigned char character, LCD_t *LCD_Config) {
 				GET(character, 2));
 		GPIO_WritePin(LCD_Config->LCD_PORT, LCD_Config->PINS[3],
 				GET(character, 3));
-		delay_ms(1);
+		STK_delayMs(1);
 		lcd_kick(LCD_Config);
 	}
 }
@@ -255,7 +229,7 @@ void lcd_display_Real_number(double Number, LCD_t *LCD_Config) {
 void lcd_kick(LCD_t *LCD_Config) {
 // Enable =0 >> LCD Busy
 	GPIO_WritePin(LCD_Config->LCD_CONTROL_PORT, LCD_Config->ENABLE_SWITCH, PIN_HIGH);
-	delay_ms(50);
+	STK_delayMs(50);
 	GPIO_WritePin(LCD_Config->LCD_CONTROL_PORT, LCD_Config->ENABLE_SWITCH, PIN_LOW);
 }
 

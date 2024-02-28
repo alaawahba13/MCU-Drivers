@@ -8,6 +8,7 @@
 #ifndef LCD_H_
 #define LCD_H_
 #include "../../MCAL/GPIO/GPIO.h"
+#include "../../MCAL/SYSTICK/SYSTICK.h"
 #include "../../MCAL/Lib/BIT_MATH.h"
 
 typedef struct {
@@ -81,5 +82,6 @@ void lcd_Clear_Screen(LCD_t *LCD_Config);
 void lcd_GOTO_XY(unsigned char row, unsigned char col,LCD_t *LCD_Config);
 void lcd_display_number(int Number,LCD_t *LCD_Config);
 void lcd_display_Real_number(double Number,LCD_t *LCD_Config);
+
 
 #endif /* LCD_H_ */
