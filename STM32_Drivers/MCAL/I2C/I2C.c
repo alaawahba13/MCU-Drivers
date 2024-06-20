@@ -30,6 +30,12 @@ void I2C_init(I2C_pinConfig_t *I2C_pinConfig, I2C_Registers_t *I2Cx) {
 
 	uint16 tmpreg=0, freqrange = 0, result = 0;
 	uint32 pclk1 = 8000000;
+
+       I2Cx->CR1  = 0;
+       I2Cx->CR2  = 0;
+       I2Cx->CCR  = 0;
+       I2Cx->OAR1 = 0;
+       I2Cx->OAR2 = 0;
 	/*            		Enable I2C clocks  					    */
 	if (I2Cx == I2C1) {
 		Global_I2C_pinConfig[I2C1_Index] = *I2C_pinConfig;
@@ -84,18 +90,18 @@ void I2C_init(I2C_pinConfig_t *I2C_pinConfig, I2C_Registers_t *I2Cx) {
 				| I2C_pinConfig->Stretch_Mode | I2C_pinConfig->I2C_Mode);
 		I2Cx->CR1 = tmpreg;
 
-		/*            		Configure ORA1 & ORA2   					    */
+		/*            		Configure OAR1 & OAR2   					    */
 		tmpreg = 0;
 		if (I2C_pinConfig->slave_address.Enable_Dual_Mode) {
 			tmpreg |= (1 << 0); 	//Dual addressing mode enable
 			tmpreg |=
 					(I2C_pinConfig->slave_address.slave_secndary_address << 1);
-			I2Cx->ORA2 = tmpreg;
+			I2Cx->OAR2 = tmpreg;
 		}
 		tmpreg = 0;
 		tmpreg |= (I2C_pinConfig->slave_address.slave_primary_address << 1);
 		tmpreg |= I2C_pinConfig->slave_address.slave_address_mode; // 10 bit mode not supported
-		I2Cx->ORA1 = tmpreg;
+		I2Cx->OAR1 = tmpreg;
 	} else {
 		//Not supported SMUBUS mode
 	}
@@ -135,13 +141,13 @@ void I2C_GPIO_SetPins(I2C_Registers_t *I2Cx) {
 	GPIO_PinConfig_t GPIO_pinConfig;
 
 	if (I2Cx == I2C1) {
-		//I2C1 SDA : PB7   SCL : PB6
+		//I2C1 SDA : PB7  SCL : PB6
 		GPIO_pinConfig.MODE = MODE_OUTPUT_AF_OD;
 		GPIO_pinConfig.Output_Speed = SPEED_10M;
-		GPIO_pinConfig.Pin_Number = PIN_7;
+		GPIO_pinConfig.Pin_Number = PIN_6;
 		GPIO_init(GPIOB, &GPIO_pinConfig);
 
-		GPIO_pinConfig.Pin_Number = PIN_6;
+		GPIO_pinConfig.Pin_Number = PIN_7;
 		GPIO_init(GPIOB, &GPIO_pinConfig);
 
 	} else if (I2Cx == I2C2) {
@@ -159,6 +165,7 @@ void I2C_GPIO_SetPins(I2C_Registers_t *I2Cx) {
 
 void I2C_Master_TX(I2C_Registers_t *I2Cx, uint16 slaveAddress, uint8 *data,
 		uint32 dataLen, Stop_Condition_t stop, Repeated_Start_t start) {
+	   volatile uint32 dummyRead __attribute__((unused));
 	// 1.Generate start condition.
 	I2C_GenerateStart(I2Cx, start, I2C_ENABLE);
 	// 2.Set when a Start condition generated.
@@ -176,6 +183,8 @@ void I2C_Master_TX(I2C_Registers_t *I2Cx, uint16 slaveAddress, uint8 *data,
 		while (!I2C_GetFlagStatus(I2Cx, EV8));
 
 	}
+	  // Wait for byte transfer to complete
+	  //  while(!GET_BIT(I2C[I2CNum]->SR1,2));
 	//7. Send Stop condition
 	if(stop == STOP)
 		I2C_GenerateStop(I2Cx, I2C_ENABLE);
@@ -280,10 +289,10 @@ FlagStatus I2C_GetFlagStatus(I2C_Registers_t *I2Cx, Status Flag) {
 		bitStatus = (I2Cx->SR2 & (1 << 1)) ? SET : RESET;
 		break;
 	case EV5:
-		bitStatus = (I2Cx->SR1 & (1 << 0)) ? SET : RESET;
+		bitStatus = ((I2Cx->SR1) & (1 << 0)) ? SET : RESET;
 		break;
 	case EV6:
-		bitStatus = (I2Cx->SR1 & (1 << 1)) ? SET : RESET;
+		bitStatus = ((I2Cx->SR1) & (1 << 1)) ? SET : RESET;
 		break;
 	case EV8:
 	case EV8_1:  //Data register empty (transmitters)
@@ -305,16 +314,13 @@ void I2C_SendSlaveAddress(I2C_Registers_t *I2Cx , uint16 slaveAddress, I2C_Direc
 	// 10 bit mode is not supported
 		uint8 index = (I2Cx == I2C1) ? I2C1_Index: I2C2_Index;
 if(Global_I2C_pinConfig[index].slave_address.slave_address_mode == I2C_Slave_7Bit){
-	  slaveAddress = (slaveAddress <<1);
 	  if(Direction == I2C_TX){
 		  // To enter Transmitter mode, a master sends the slave address with LSB reset.
-		  slaveAddress &= ~(1<<0);
+		  slaveAddress &= (uint8)(~0x0001);
 	  }else{
 		  //  To enter Receiver mode, a master sends the slave address with LSB set.
-		  slaveAddress |= (1<<0);
-	  }
-
-	I2Cx->DR = slaveAddress;
+		  slaveAddress |= 0x0001;
+	  }I2Cx->DR = 	slaveAddress;
 }else{
 	// not supported
 }
@@ -414,7 +420,7 @@ void I2C1_EV_IRQHandler(void){
 
 void Slave_States (I2C_Registers_t* I2Cx  ,Slave_state state)
 {
-	uint8_t index =    I2Cx == I2C1 ? I2C1_Index: I2C2_Index ;
+	uint8 index =    I2Cx == I2C1 ? I2C1_Index: I2C2_Index ;
 
 	switch (state)
 	{
