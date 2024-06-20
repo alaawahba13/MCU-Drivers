@@ -14,6 +14,7 @@
 #include "../GPIO/GPIO.h"
 #include "../RCC/RCC.h"
 #include "../EXTI/EXTI.h"
+#include <string.h>
 
 //================================================
 //   User type definitions (structures)
@@ -138,7 +139,9 @@ void USART_DeInit(USART_Registers_t *USARTx);
 void USART_SetPins(USART_Registers_t *USARTx);
 
 void USART_Send(USART_Registers_t *USARTx , uint16 *pTxBuffer , enum Polling_Mechanism PollingEn );
-void USART_Recieve(USART_Registers_t *USARTx , uint16 *pTxBuffer , enum Polling_Mechanism PollingEn );
+uint16 USART_Recieve(USART_Registers_t *USARTx , enum Polling_Mechanism PollingEn );
 
 void USART_Wait_TC(USART_Registers_t *USARTx);
+void USART_SendString(USART_Registers_t *USARTx, const uint8 *str);
+void USART_ReceiveString(USART_Registers_t *USARTx, uint8 *buffer);
 #endif /* INC_USART_H_ */

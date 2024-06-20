@@ -15,7 +15,7 @@
  * 							Generic Variables
  * =======================================================================================
  */
-static USART_pinConfig_t Global_pinConfig[3] = {NULL,NULL,NULL};
+static USART_pinConfig_t Global_pinConfig[3] = { NULL, NULL, NULL };
 
 #define USART1_Index 			0
 #define USART2_Index 			1
@@ -41,14 +41,14 @@ void USART_init(USART_pinConfig_t *pinConfig, USART_Registers_t *USARTx) {
 	/*            Enable USART clocks      */
 	if (USARTx == USART1) {
 		Global_pinConfig[USART1_Index] = *pinConfig;
-		RCC_CLK_EN(APB2_ID,USART1_ID);
+		RCC_CLK_EN(APB2_ID, USART1_ID);
 	}
 	if (USARTx == USART2) {
 		Global_pinConfig[USART2_Index] = *pinConfig;
-		RCC_CLK_EN(APB1_ID,USART2_ID);
+		RCC_CLK_EN(APB1_ID, USART2_ID);
 	} else if (USARTx == USART3) {
 		Global_pinConfig[USART3_Index] = *pinConfig;
-		RCC_CLK_EN(APB1_ID,USART3_ID);
+		RCC_CLK_EN(APB1_ID, USART3_ID);
 	}
 
 	/*            Enable USART Module    	  */
@@ -81,7 +81,7 @@ void USART_init(USART_pinConfig_t *pinConfig, USART_Registers_t *USARTx) {
 		//		Enable NVIC For USARTx IRQ
 		if (USARTx == USART1) {
 			NVIC_Enable(NVIC_USART1);
-		}else if (USARTx == USART2) {
+		} else if (USARTx == USART2) {
 			NVIC_Enable(NVIC_USART2);
 		} else if (USARTx == USART3) {
 			NVIC_Enable(NVIC_USART3);
@@ -98,14 +98,14 @@ void USART_init(USART_pinConfig_t *pinConfig, USART_Registers_t *USARTx) {
 void USART_DeInit(USART_Registers_t *USARTx) {
 
 	if (USARTx == USART1) {
-		RCC_CLK_RST(APB2_ID,USART1_ID);
+		RCC_CLK_RST(APB2_ID, USART1_ID);
 		NVIC_Disable(NVIC_USART1);
 	}
 	if (USARTx == USART2) {
-		RCC_CLK_RST(APB1_ID,USART2_ID);
+		RCC_CLK_RST(APB1_ID, USART2_ID);
 		NVIC_Disable(NVIC_USART2);
 	} else if (USARTx == USART3) {
-		RCC_CLK_RST(APB1_ID,USART3_ID);
+		RCC_CLK_RST(APB1_ID, USART3_ID);
 		NVIC_Disable(NVIC_USART3);
 	}
 
@@ -132,13 +132,16 @@ void USART_SetPins(USART_Registers_t *USARTx) {
 		GPIO_init(GPIOA, &GPIO_pinConfig);
 		// Configure CTS /RTS pins
 		if (Global_pinConfig[USART1_Index].FlowControl == USART_FlowControl_CTS
-				|| Global_pinConfig[USART1_Index].FlowControl == USART_FlowControl_BOTH) {
+				|| Global_pinConfig[USART1_Index].FlowControl
+						== USART_FlowControl_BOTH) {
 			// CTS pin PORTA pin 11 As   Alternate function INPUT
 			GPIO_pinConfig.MODE = MODE_INPUT_FLO;
 			GPIO_pinConfig.Pin_Number = PIN_11;
 			GPIO_init(GPIOA, &GPIO_pinConfig);
-		} else if (Global_pinConfig[USART1_Index].FlowControl == USART_FlowControl_RTS
-				|| Global_pinConfig[USART1_Index].FlowControl == USART_FlowControl_BOTH) {
+		} else if (Global_pinConfig[USART1_Index].FlowControl
+				== USART_FlowControl_RTS
+				|| Global_pinConfig[USART1_Index].FlowControl
+						== USART_FlowControl_BOTH) {
 			// RTS pin PORTA pin 12 As   Alternate function  Push pull
 			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
 			GPIO_pinConfig.Output_Speed = SPEED_10M;
@@ -157,12 +160,17 @@ void USART_SetPins(USART_Registers_t *USARTx) {
 		GPIO_pinConfig.Pin_Number = PIN_3;
 		GPIO_init(GPIOA, &GPIO_pinConfig);
 		// Configure CTS /RTS pins
-		if (Global_pinConfig[USART2_Index].FlowControl == USART_FlowControl_CTS|| Global_pinConfig[USART2_Index].FlowControl == USART_FlowControl_BOTH) {
+		if (Global_pinConfig[USART2_Index].FlowControl == USART_FlowControl_CTS
+				|| Global_pinConfig[USART2_Index].FlowControl
+						== USART_FlowControl_BOTH) {
 			// CTS pin PORTA pin 0 As   Alternate function INPUT
 			GPIO_pinConfig.MODE = MODE_INPUT_FLO;
 			GPIO_pinConfig.Pin_Number = PIN_0;
 			GPIO_init(GPIOA, &GPIO_pinConfig);
-		} else if (Global_pinConfig[USART2_Index].FlowControl == USART_FlowControl_RTS|| Global_pinConfig[USART2_Index].FlowControl == USART_FlowControl_BOTH) {
+		} else if (Global_pinConfig[USART2_Index].FlowControl
+				== USART_FlowControl_RTS
+				|| Global_pinConfig[USART2_Index].FlowControl
+						== USART_FlowControl_BOTH) {
 			// RTS pin PORTA pin 1 As   Alternate function  Push pull
 			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
 			GPIO_pinConfig.Output_Speed = SPEED_10M;
@@ -181,12 +189,17 @@ void USART_SetPins(USART_Registers_t *USARTx) {
 		GPIO_pinConfig.Pin_Number = PIN_11;
 		GPIO_init(GPIOB, &GPIO_pinConfig);
 		// Configure CTS /RTS pins
-		if (Global_pinConfig[USART3_Index].FlowControl == USART_FlowControl_CTS|| Global_pinConfig[USART3_Index].FlowControl == USART_FlowControl_BOTH) {
+		if (Global_pinConfig[USART3_Index].FlowControl == USART_FlowControl_CTS
+				|| Global_pinConfig[USART3_Index].FlowControl
+						== USART_FlowControl_BOTH) {
 			// CTS pin PORTB pin 13 As   Alternate function INPUT
 			GPIO_pinConfig.MODE = MODE_INPUT_AF;
 			GPIO_pinConfig.Pin_Number = PIN_13;
 			GPIO_init(GPIOB, &GPIO_pinConfig);
-		} else if (Global_pinConfig[USART3_Index].FlowControl == USART_FlowControl_RTS || Global_pinConfig[USART3_Index].FlowControl == USART_FlowControl_BOTH) {
+		} else if (Global_pinConfig[USART3_Index].FlowControl
+				== USART_FlowControl_RTS
+				|| Global_pinConfig[USART3_Index].FlowControl
+						== USART_FlowControl_BOTH) {
 			// RTS pin PORTB pin 14 As   Alternate function  Push pull
 			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
 			GPIO_pinConfig.Output_Speed = SPEED_10M;
@@ -216,16 +229,17 @@ void USART_SetPins(USART_Registers_t *USARTx) {
 void USART_Send(USART_Registers_t *USARTx, uint16 *pTxBuffer,
 		enum Polling_Mechanism PollingEn) {
 	uint8 index = 0;
-	index = (USARTx == USART1) ? USART1_Index:((USARTx ==USART2) ? USART2_Index : USART3_Index);
+	index = (USARTx == USART1) ?
+			USART1_Index : ((USARTx == USART2) ? USART2_Index : USART3_Index);
 //Write the data to send in the USART_DR register (this clears the TXE bit).
 	if (PollingEn == Enable)
 		while (!(USARTx->SR & (1 << 7)))
 			;	//TXE bit is 1 means Data is completely sent.
 
 	if (Global_pinConfig[index].DataLength == USART_DataLength9) {
-		USARTx->DR = (*pTxBuffer & (uint16)0x01FF);
+		USARTx->DR = (*pTxBuffer & (uint16) 0x01FF);
 	} else {
-		USARTx->DR = (*pTxBuffer & (uint8)0xFF);
+		USARTx->DR = (*pTxBuffer & (uint8) 0xFF);
 	}
 }
 
@@ -237,10 +251,12 @@ void USART_Send(USART_Registers_t *USARTx, uint16 *pTxBuffer,
  * @param [in] 		- PollingEn: Enables or disables the polling mechanism
  * @retval 			- none
  */
-void USART_Recieve(USART_Registers_t *USARTx, uint16 *pTxBuffer,
+uint16 USART_Recieve(USART_Registers_t *USARTx,
 		enum Polling_Mechanism PollingEn) {
+	uint16 pTxBuffer;
 	uint8 index = 0;
-		index = (USARTx == USART1) ? USART1_Index:((USARTx ==USART2) ? USART2_Index : USART3_Index);
+	index = (USARTx == USART1) ?
+			USART1_Index : ((USARTx == USART2) ? USART2_Index : USART3_Index);
 	/*
 	 * Bit 5 RXNE: Read data register not empty
 	 * This bit is set by hardware when the content of the RDR shift register has been transferred to
@@ -254,24 +270,25 @@ void USART_Recieve(USART_Registers_t *USARTx, uint16 *pTxBuffer,
 	if (Global_pinConfig[index].DataLength == USART_DataLength9) {
 		if (Global_pinConfig[index].Parity == USART_Parity_None) {
 			// case No parity
-				*((uint16 *)pTxBuffer)= USARTx->DR;
+			pTxBuffer = USARTx->DR;
 
 		} else {
 			// If parity is enabled  then ignore the MSB
-			*((uint16 *)pTxBuffer) = (USARTx->DR & (uint8)0xFF);
+			pTxBuffer = (USARTx->DR & (uint8) 0xFF);
 		}
 
 	} else {
 		if (Global_pinConfig[index].Parity == USART_Parity_None) {
 			// case No parity
-			*((uint16 *)pTxBuffer) = (USARTx->DR & (uint8)0xFF);
+			pTxBuffer = (USARTx->DR & (uint8) 0xFF);
 
 		} else {
 
 			// If parity is enabled  then ignore the MSB
-			*((uint16 *)pTxBuffer) = (USARTx->DR & (uint8)0x7F);
+			pTxBuffer = (USARTx->DR & (uint8) 0x7F);
 		}
 	}
+	return pTxBuffer;
 }
 
 /**================================================================
@@ -287,16 +304,45 @@ void USART_Wait_TC(USART_Registers_t *USARTx) {
 	 * 0: Transmission is not complete
 	 * 1: Transmission is complete
 	 */
-	while (!(USARTx->SR & (1 << 6)));
+	while (!(USARTx->SR & (1 << 6)))
+		;
+}
+
+void USART_SendString(USART_Registers_t *USARTx, const uint8 *str) {
+	// Calculate string length
+	size_t len = strlen(str);
+
+	// Loop through each character and send it
+	for (size_t i = 0; i < len; i++) {
+		// Send character
+		USART_Send(USARTx, (uint16*) &str[i], Enable);
+
+	}
+}
+
+void USART_ReceiveString(USART_Registers_t *USARTx, uint8 *buffer) {
+	uint8 index = 0;
+
+	// Receive the first character and store it in the array.
+	buffer[index] = USART_Recieve(USART1, Enable);
+
+	// Keep receiving characters until the end of the string or '#' character is received.
+	while (buffer[index] != '\0' && buffer[index] != '\n') {
+		index++;
+		buffer[index] = USART_Recieve(USART1, Enable);
+	}
+
+	// Add the null terminator at the end of the received string.
+	buffer[index] = '\0';
 }
 
 // ISR
-void USART1_IRQHandler(){
+void USART1_IRQHandler() {
 	Global_pinConfig[USART1_Index].P_CallBack_Fun();
 }
-void USART2_IRQHandler(){
+void USART2_IRQHandler() {
 	Global_pinConfig[USART2_Index].P_CallBack_Fun();
 }
-void USART3_IRQHandler(){
+void USART3_IRQHandler() {
 	Global_pinConfig[USART3_Index].P_CallBack_Fun();
 }
