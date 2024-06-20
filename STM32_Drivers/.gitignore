@@ -1,0 +1,10 @@
+.settings
+Debug
+Inc
+Src
+Startup
+.cproject
+.project
+*.cfg
+*.launch
+*.ld
