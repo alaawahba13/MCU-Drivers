@@ -89,7 +89,7 @@ void GPIO_init(GPIO_Registers_t *GPIOx, GPIO_PinConfig_t *pinConfig) {
 	uint8 register_bits = 0;
 	// if pin is OUTPUT
 	if ((pinConfig->MODE == MODE_OUTPUT_AF_OD) || (pinConfig->MODE == MODE_OUTPUT_AF_PP) || (pinConfig->MODE == MODE_OUTPUT_PP)	|| (pinConfig->MODE == MODE_OUTPUT_OD)) {
-		register_bits = ((((pinConfig->MODE - 4) << 2)	| (pinConfig->Output_Speed)) & 0x0f);
+		register_bits = ((((pinConfig->MODE - 4) << 2)	| pinConfig->Output_Speed) & 0x0f);
 
 	}
 	else
@@ -248,7 +248,7 @@ uint8 GPIO_LockPin(GPIO_Registers_t *GPIOx, uint16 pinNumber) {
 	 1: Port configuration locked
 	 */
 
-	volatile uint32_t tmp = 1<<16 ;
+	volatile uint32 tmp = 1<<16 ;
 	//Set the LCKy
 	tmp |= pinNumber ;
 
@@ -262,7 +262,7 @@ uint8 GPIO_LockPin(GPIO_Registers_t *GPIOx, uint16 pinNumber) {
 	//	Read 0
 	tmp = GPIOx->LCKR  ;
 	//	Read 1 (this read is optional but confirms that the lock is active)
-	if ( (uint32_t) (GPIOx->LCKR  & 1<<16 ))
+	if ( (uint32) (GPIOx->LCKR  & 1<<16 ))
 	{
 		return RET_OK ;
 	}else
