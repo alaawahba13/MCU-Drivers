@@ -9,8 +9,8 @@
 //       Includes
 //=======================
 #include "SPI.h"
-#define   RXNE_PIN            ((uint8_t)0x01)         //Bit 0 RXNE: Receive buffer not empty
-#define   TXE_PIN             ((uint8_t)0x02)         //Bit 1 TXE: Transmit buffer empty
+#define   RXNE_PIN            ((uint16)0x01)         //Bit 0 RXNE: Receive buffer not empty
+#define   TXE_PIN             ((uint16)0x02)         //Bit 1 TXE: Transmit buffer empty
 /*
  * =======================================================================================
  * 							Generic Variables
@@ -84,9 +84,6 @@ void SPI_init(SPI_PinConfig_t *SPI_pinConfig, SPI_Registers_t *SPIx) {
 	SPIx->CR1 = tmpreg_CR1;
 	SPIx->CR2 = tmpreg_CR2;
 
-	SPIx->I2SCFGR &= ~(1<<11);
-	SPIx->CRCPR = 0x0;
-
 }
 /**================================================================
  * @Fn				- SPI_DeInit
@@ -113,8 +110,8 @@ void SPI_DeInit(SPI_Registers_t *SPIx) {
 void SPI_SendData(SPI_Registers_t *SPIx, uint16 *pData,
 		enum PollingMechanism PollingEn) {
 	if (PollingEn == Pollingenable) {
-		while (!((SPIx->SR) & TXE_PIN))
-			;
+		while (!((SPIx->SR) & TXE_PIN));
+
 	}
 	SPIx->DR = *pData;
 }
@@ -125,13 +122,13 @@ void SPI_SendData(SPI_Registers_t *SPIx, uint16 *pData,
  * @param [in]	    - pData: Data to be received
  * @param [in]		- PollingEn: Enables or disables the polling mechanism
  */
-void SPI_RecieveData(SPI_Registers_t *SPIx, uint16 *pData,
+uint16 SPI_RecieveData(SPI_Registers_t *SPIx,
 		enum PollingMechanism PollingEn) {
 	if (PollingEn == Pollingenable) {
 		while (!((SPIx->SR) & RXNE_PIN))
 			;
 	}
-	*pData = SPIx->DR;
+	return SPIx->DR;
 }
 /**================================================================
  * @Fn				-SPI_GPIO_SetPins
@@ -161,13 +158,13 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
 				break;
 			}
 			// SCLK
-			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
-			GPIO_pinConfig.Output_Speed = SPEED_10M;
+			GPIO_pinConfig.MODE = MODE_OUTPUT_PP;
+			GPIO_pinConfig.Output_Speed = SPEED_50M;
 			GPIO_pinConfig.Pin_Number = PIN_5;
 			GPIO_init(GPIOA, &GPIO_pinConfig);
 			// MOSI
-			GPIO_pinConfig.MODE = MODE_OUTPUT_AF_PP;
-			GPIO_pinConfig.Output_Speed = SPEED_10M;
+			GPIO_pinConfig.MODE = MODE_OUTPUT_PP;
+			GPIO_pinConfig.Output_Speed = SPEED_50M;
 			GPIO_pinConfig.Pin_Number = PIN_7;
 			GPIO_init(GPIOA, &GPIO_pinConfig);
 			//MISO
@@ -264,7 +261,7 @@ void SPI_GPIO_SetPins(SPI_Registers_t *SPIx) {
  * @param [in]	    - pData: Data to be sent and received
  * @param [in]		- PollingEn: Enables or disables the polling mechanism
  */
-void SPI_RXTX(SPI_Registers_t *SPIx, uint16 *pData,
+uint16 SPI_RXTX(SPI_Registers_t *SPIx, uint16 *pData,
 		enum PollingMechanism PollingEn) {
 	if (PollingEn ==Pollingenable ) {
 		while (!((SPIx->SR) & TXE_PIN));
@@ -273,7 +270,7 @@ void SPI_RXTX(SPI_Registers_t *SPIx, uint16 *pData,
 	if (PollingEn == Pollingenable) {
 		while (!((SPIx->SR) & RXNE_PIN));
 	}
-	*pData = SPIx->DR;
+	return SPIx->DR;
 }
 
 //ISR
