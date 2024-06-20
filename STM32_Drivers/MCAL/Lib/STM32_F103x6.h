@@ -49,6 +49,8 @@
 #define ADC1_BASE 															0x40012400
 #define ADC2_BASE 															0x40012800
 #define ADC3_BASE 															0x40013C00
+// Timer
+#define TIM1_BASE 															0x40012C00
 
 
 
@@ -68,6 +70,9 @@
 #define I2C1_BASE 															0x40005400
 #define I2C2_BASE 															0x40005800
 
+#define TIM2_BASE 															0x40000000
+#define TIM3_BASE 															0x40000400
+#define TIM4_BASE 															0x40000800
 //-*-*-*-*-*-*-*-*-*-*-*-
 //Peripheral register: GPIO
 //-*-*-*-*-*-*-*-*-*-*-*
@@ -194,8 +199,8 @@ typedef struct{
 typedef struct{
 	volatile uint32 CR1;
 	volatile uint32 CR2;
-	volatile uint32 ORA1;
-	volatile uint32 ORA2;
+	volatile uint32 OAR1;
+	volatile uint32 OAR2;
 	volatile uint32 DR;
 	volatile uint32 SR1;
 	volatile uint32 SR2;
@@ -221,6 +226,31 @@ typedef struct{
 	volatile uint32 JDR[4];
 	volatile uint32 DR;
 }ADC_Registers_t;
+
+//-*-*-*-*-*-*-*-*-*-*-*-
+//Peripheral register: TIM
+//-*-*-*-*-*-*-*-*-*-*-*
+
+typedef struct{
+	volatile uint32 CR1;
+	volatile uint32 CR2;
+	volatile uint32 SMCR;
+	volatile uint32 DIER;
+	volatile uint32 SR;
+	volatile uint32 EGR;
+	volatile uint32 CCMR1;
+	volatile uint32 CCMR2;
+	volatile uint32 CCER;
+	volatile uint32 CNT;
+	volatile uint32 PSC;
+	volatile uint32 ARR;
+	volatile uint32 RCR;
+	volatile uint32 CCR[4];
+	volatile uint32 BDTR;
+	volatile uint32 DCR;
+	volatile uint32 DMAR;
+}TIM_Registers_t;
+
 
 //-*-*-*-*-*-*-*-*-*-*-*
 //Peripheral Instants:
@@ -253,6 +283,10 @@ typedef struct{
 #define ADC2 					((ADC_Registers_t * )(ADC2_BASE))
 #define ADC3 					((ADC_Registers_t * )(ADC3_BASE))
 
+#define TIM1 					((TIM_Registers_t *)(TIM1_BASE))
+#define TIM2 					((TIM_Registers_t *)(TIM2_BASE))
+#define TIM3 					((TIM_Registers_t *)(TIM3_BASE))
+#define TIM4					((TIM_Registers_t *)(TIM4_BASE))
 
 //-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 //External Interrupt Macros:
