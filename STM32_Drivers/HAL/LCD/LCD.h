@@ -15,27 +15,27 @@
 /* This is used for three control pins RS, RW, Enable */
 #define LCD_CONTROL_PORT 		GPIOA
 // define the three control pins connected to MCU
-#define ENABLE_SWITCH			PIN_6
-#define REGISTER_SELECT         PIN_5
+#define ENABLE_SWITCH			PIN_2
+#define REGISTER_SELECT         PIN_3
 
 #define D0 						PIN_0
 #define D1 						PIN_1
 #define D2 						PIN_2
 #define D3 						PIN_3
-#define D4 						PIN_12
-#define D5 						PIN_13
-#define D6 						PIN_14
-#define D7 						PIN_15
+#define D4 						PIN_4
+#define D5 						PIN_5
+#define D6 						PIN_6
+#define D7 						PIN_7
 
 //#define EIGHT_BIT_MODE
 #define FOUR_BIT_MODE
 
-//#define LCD_4x20				1
+#define LCD_4x20				1
 //#define LCD_2x16
-#define LCD_4x16				1
+//#define LCD_4x16				1
 
 
-#define MAX_COLS				16
+#define MAX_COLS				20
 #define MAX_ROWS				4
 
 /* Some instructions from data sheet */

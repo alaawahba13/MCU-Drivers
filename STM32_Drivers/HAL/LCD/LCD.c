@@ -6,8 +6,8 @@
  */
 
 #include "LCD.h"
-
 GPIO_PinConfig_t pinConfig;
+static int count = 0;
 
 void isBusy(void) {
 	/* 1.Set the data port as input
@@ -66,6 +66,8 @@ void lcd_init() {
 	 */
 
 	// you must wait for the hardware to initialize
+	STK_init();
+
 	STK_delayMs(20);
 	// set port as ouput to write commands
 #ifdef EIGHT_BIT_MODE
@@ -148,7 +150,7 @@ void lcd_Send_Command(unsigned char command) {
 #ifdef EIGHT_BIT_MODE
 	GPIO_WritePort(LCD_PORT, command);
 	GPIO_WritePin(LCD_CONTROL_PORT, REGISTER_SELECT, PIN_LOW);
-	STK_delayMs(1);
+	STK_delayMs(01);
 	lcd_kick();
 #endif
 
@@ -160,7 +162,7 @@ void lcd_Send_Command(unsigned char command) {
 	GPIO_WritePin(LCD_PORT, D6, GET(command, 6));
 	GPIO_WritePin(LCD_PORT, D7, GET(command, 7));
 
-	STK_delayMs(1);
+	STK_delayMs(10);
 	lcd_kick();
 
 	GPIO_WritePin(LCD_PORT, D4, GET(command, 0));
@@ -168,7 +170,7 @@ void lcd_Send_Command(unsigned char command) {
 	GPIO_WritePin(LCD_PORT, D6, GET(command, 2));
 	GPIO_WritePin(LCD_PORT, D7, GET(command, 3));
 
-	STK_delayMs(1);
+	STK_delayMs(10);
 	lcd_kick();
 #endif
 }
@@ -183,7 +185,7 @@ void lcd_Send_Char(unsigned char character) {
 	GPIO_WritePort(LCD_PORT, character);
 	GPIO_WritePin(LCD_CONTROL_PORT, REGISTER_SELECT, PIN_HIGH);
 
-	STK_delayMs(1);
+	STK_delayMs(10);
 	lcd_kick();
 #endif
 
@@ -194,40 +196,40 @@ void lcd_Send_Char(unsigned char character) {
 	GPIO_WritePin(LCD_PORT, D5, GET(character, 5));
 	GPIO_WritePin(LCD_PORT, D6, GET(character, 6));
 	GPIO_WritePin(LCD_PORT, D7, GET(character, 7));
-	STK_delayMs(1);
+	STK_delayMs(10);
 	lcd_kick();
 	GPIO_WritePin(LCD_PORT, D4, GET(character, 0));
 	GPIO_WritePin(LCD_PORT, D5, GET(character, 1));
 	GPIO_WritePin(LCD_PORT, D6, GET(character, 2));
 	GPIO_WritePin(LCD_PORT, D7, GET(character, 3));
-	STK_delayMs(1);
+	STK_delayMs(10);
 	lcd_kick();
 #endif
+
+	if (count == MAX_COLS) {
+		lcd_GOTO_XY(1, 0);
+	}
+#if (LCD_4x20 || LCD_4x16)
+	if (count == MAX_COLS * 2) {
+		lcd_GOTO_XY(2, 0);
+	} else if (count == MAX_COLS * 3) {
+		lcd_GOTO_XY(3, 0);
+	}
+#endif
+
+	// if both lines are full clear and start over.
+	else if (count == (MAX_COLS * MAX_ROWS)) {
+		lcd_Clear_Screen();
+		lcd_GOTO_XY(0, 0);
+		count = 0;
+	}
+
+	count++;
 }
 void lcd_send_String(char *string) {
-	// keeps track of chars count
-	int count = 0;
 	while (*string > 0) {
 		count++;
 		lcd_Send_Char(*string++);
-		// if first line is full go to second
-		if (count == MAX_COLS) {
-			lcd_GOTO_XY(1, 0);
-		}
-#if (LCD_4x20 || LCD_4x16)
-		if (count == MAX_COLS * 2) {
-			lcd_GOTO_XY(2, 0);
-		} else if (count == MAX_COLS * 3) {
-			lcd_GOTO_XY(3, 0);
-		}
-#endif
-
-		// if both lines are full clear and start over.
-		else if (count == (MAX_COLS * MAX_ROWS)) {
-			lcd_Clear_Screen();
-			lcd_GOTO_XY(0, 0);
-			count = 0;
-		}
 
 	}
 }
@@ -252,6 +254,7 @@ void lcd_GOTO_XY(unsigned char row, unsigned char col) {
 }
 void lcd_Clear_Screen(void) {
 	lcd_Send_Command(CLEAR_SCREEN);
+	count = 0;
 }
 void lcd_display_number(int Number) {
 	char str[7];
@@ -267,9 +270,9 @@ void lcd_display_Real_number(double Number) {
 	int tmpVal = tmpNum;
 	float tmpFrac = tmpNum - tmpVal;
 
-	int Frac = tmpFrac * 10000;
+	int Frac = tmpFrac * 100;
 
-	sprintf(str, "%s%d.%04d", tmpSign, tmpVal, Frac);
+	sprintf(str, "%s%d.%02d", tmpSign, tmpVal, Frac);
 	lcd_send_String(str);
 
 }
