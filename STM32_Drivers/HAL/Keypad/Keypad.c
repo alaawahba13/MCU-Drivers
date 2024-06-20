@@ -5,7 +5,7 @@
  *      Author: Alaa Wahba
  */
 
-#include "inc/Keypad.h"
+#include "Keypad.h"
 
 int Keypad_Cols[] = { C0, C1, C2 };
 int Keypad_Rows[] = { R0, R1, R2, R3 };

@@ -16,13 +16,13 @@
 
 
 // Define the Keypad Cols & Rows pins
-#define R0 					PIN_0
-#define R1					PIN_1
-#define R2 					PIN_3
-#define R3					PIN_4
-#define C0 					PIN_5
-#define C1					PIN_6
-#define C2 					PIN_7
+#define R0 					PIN_3
+#define R1					PIN_4
+#define R2 					PIN_5
+#define R3					PIN_6
+#define C0 					PIN_7
+#define C1					PIN_8
+#define C2 					PIN_9
 #define C3					PIN_8
 
 #define KPD_MAX_COLS			3
