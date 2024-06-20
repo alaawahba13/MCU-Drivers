@@ -41,20 +41,28 @@ uint32 RCC_getSYSCLK_Freq(void) {
 	 10: PLL selected as system clock
 	 */
 	uint8 SW = (RCC->CFGR >> 2) & 0b11;
+	uint32 sysClk = HSI;
 	switch (SW) {
 	case 0:
-		return HSI ;
+		sysClk = HSI;
 		break;
 	case 1:
 		//todo need to calculate  it //HSE User Should Specify it
-		return HSE ;
+		sysClk = HSE;
 		break;
 	case 2:
-		//todo need to calculate  it PLLCLK and PLLMUL & PLL Source MUX
-		return HSE ;
+		uint8 pll_src = (RCC->CFGR >> 16) & 1 ;
+		if(pll_src){ // HSE
+			 sysClk = GET(RCC->CFGR,17) == 1 ?( HSE /2) : HSE ; //check if HSE is divided by 2
+		}else{ //HSI / 2 = 4MHZ
+			sysClk = HSI/2 ;
+		}
+		uint16 pll_mul = (RCC->CFGR >> 18) & 0b1111;
+		sysClk = sysClk * (pll_mul+2);
 		break;
+
 	}
-	return 0;
+	return sysClk;
 }
 
 uint32 RCC_getPCKL1_Freq(void) {
@@ -70,15 +78,17 @@ uint32 RCC_getHCKL_Freq(void) {
 	return (RCC_getSYSCLK_Freq() >> AHB_PrescTable[((RCC->CFGR >> 4) & 0b1111)]);
 }
 
-void RCC_init(RCC_CLKSrc_t clkSrc, RCC_HSESrc_t HSESrc, RCC_PLLSrc_t PLLSrc) {
-
+void RCC_init(RCC_CLKSrc_t clkSrc, RCC_HSESrc_t HSESrc, RCC_PLLSrc_t PLLSrc,
+		uint8 PLLMUL) {
 	switch (clkSrc) {
 	case RCC_HSI:
 		/*
 		 *  HSION: Internal high-speed clock enable
 		 */
 		RCC->CR |= (1 << 0);
-		RCC->CFGR |= (1 << 0);
+		// choose src
+		RCC->CFGR &= ~(1 << 0);
+		RCC->CFGR &= ~(1 << 1);
 		break;
 	case RCC_HSE:
 		/* Enable HSEON
@@ -86,28 +96,50 @@ void RCC_init(RCC_CLKSrc_t clkSrc, RCC_HSESrc_t HSESrc, RCC_PLLSrc_t PLLSrc) {
 		 * 1: HSE oscillator ON
 		 */
 		RCC->CR |= (1 << 16);
-		RCC->CFGR |= (1 << 0);
 		switch (HSESrc) {
 		case HSE_CRYSTAL:
 			// disable bypass
 			RCC->CR &= ~(1 << 18);
+			// choose src
+			RCC->CFGR |= (1 << 0);
+			RCC->CFGR &= ~(1 << 1);
 			break;
 		case HSE_RC:
 			// enable bypass
 			RCC->CR |= (1 << 18);
+			// choose src
+			RCC->CFGR |= (1 << 0);
+			RCC->CFGR &= ~(1 << 1);
 			break;
 		}
 		break;
 	case RCC_PLL:
-		// 24 PLLON: PLL enable
-		RCC->CR |= (1 << 24);
 		switch (PLLSrc) {
 		case PLL_HSE:
+			/**
+			 * PLLSRC: PLL entry clock source
+			 Set and cleared by software to select PLL clock source. This bit can be written only when
+			 PLL is disabled.
+			 0: HSI oscillator clock / 2 selected as PLL input clock
+			 1: HSE oscillator clock selected as PLL input clock
+			 */
+			RCC->CFGR |= (1 << 16);
+			/*
+			 * PLLXTPRE: HSE divider for PLL entry
+			 0: HSE clock not divided
+			 1: HSE clock divided by 2
+			 */
+			RCC->CFGR &= ~(1 << 17);
+			// SET PLL MUL
+			RCC->CFGR |= (PLLMUL << 18);
+			// 24 PLLON: PLL enable
+			RCC->CR |= (1 << 24);
 			/* Enable HSEON
 			 * 0: HSE oscillator OFF
 			 * 1: HSE oscillator ON
 			 */
 			RCC->CR |= (1 << 16);
+			RCC->CFGR &= ~(1 << 0);
 			RCC->CFGR |= (1 << 1);
 			break;
 		case PLL_HSI:
@@ -115,9 +147,16 @@ void RCC_init(RCC_CLKSrc_t clkSrc, RCC_HSESrc_t HSESrc, RCC_PLLSrc_t PLLSrc) {
 			 *  HSION: Internal high-speed clock enable
 			 */
 			RCC->CR |= (1 << 0);
-			RCC->CFGR |= (1 << 16);
-			RCC->CFGR &= ~(1 << 17);
+			// SET PLL MUL
+			RCC->CFGR |= (PLLMUL << 18);
+			// 24 PLLON: PLL enable
+			RCC->CR |= (1 << 24);
+
+			RCC->CFGR &= ~(1 << 0);
 			RCC->CFGR |= (1 << 1);
+
+			RCC->CFGR &= ~(1 << 16);
+
 			break;
 		}
 		break;
@@ -152,4 +191,17 @@ void RCC_CLK_RST(uint8 busID, uint8 periphralID) {
 		break;
 	}
 }
+void RCC_setAPB1Prescalar(APB_Prescalar_t prescalar) {
+	RCC->CFGR |= (prescalar << 8);
+}
+void RCC_setAPB2Prescalar(APB_Prescalar_t prescalar) {
+	RCC->CFGR |= (prescalar << 11);
 
+}
+void RCC_setAHBPrescalar(AHB_Prescalar_t prescalar) {
+	RCC->CFGR |= (prescalar << 4);
+}
+
+void RCC_setADCPrescalar(int prescalar) {
+	RCC->CFGR |= (prescalar << 14);
+}
